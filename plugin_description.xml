@@ -1,0 +1,9 @@
+<library path="lib/librviz_topmap">
+  <class name="rviz_topmap/TopmapNode"
+         type="rviz_topmap::TopmapNodeTool"
+         base_class_type="rviz::Tool">
+    <description>
+      Tool for manipulating strands topological map
+    </description>
+  </class>
+</library>
