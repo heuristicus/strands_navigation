@@ -46,19 +46,19 @@ namespace rviz_topmap
  * @brief Panel for choosing the view controller and saving and restoring
  * viewpoints.
  */
- class TopmapPanel: public rviz::Panel
+ class TopologicalMapPanel: public rviz::Panel
 {
 Q_OBJECT
 public:
-  TopmapPanel( QWidget* parent = 0 );
-  virtual ~TopmapPanel() {}
+  TopologicalMapPanel( QWidget* parent = 0 );
+  virtual ~TopologicalMapPanel() {}
 
   /** @brief Overridden from Panel.  Just calls setViewManager() with vis_manager_->getViewManager(). */
   virtual void onInitialize();
 
   /** @brief Set the ViewManager which this panel should display and edit.
    *
-   * If this TopmapPanel is to be used with a ViewManager other than
+   * If this TopologicalMapPanel is to be used with a ViewManager other than
    * the one in the VisualizationManager sent in through
    * Panel::initialize(), either Panel::initialize() must not be
    * called or setViewManager() must be called after

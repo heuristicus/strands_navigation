@@ -51,12 +51,12 @@ namespace rviz_topmap
 // Here we declare our new subclass of rviz::Tool.  Every tool
 // which can be added to the tool bar is a subclass of
 // rviz::Tool.
-class TopmapNodeTool: public rviz::Tool
+class TopmapEdgeTool: public rviz::Tool
 {
 Q_OBJECT
 public:
-  TopmapNodeTool();
-  ~TopmapNodeTool();
+  TopmapEdgeTool();
+  ~TopmapEdgeTool();
 
   virtual void onInitialize();
 

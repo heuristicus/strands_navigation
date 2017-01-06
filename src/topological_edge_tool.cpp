@@ -39,7 +39,7 @@
 #include <rviz/geometry.h>
 #include <rviz/properties/vector_property.h>
 
-#include "node_tool.h"
+#include "topological_edge_tool.h"
 
 namespace rviz_topmap
 {
@@ -53,7 +53,7 @@ namespace rviz_topmap
 //
 // Here we set the "shortcut_key_" member variable defined in the
 // superclass to declare which key will activate the tool.
-TopmapNodeTool::TopmapNodeTool()
+TopmapEdgeTool::TopmapEdgeTool()
   : moving_flag_node_( NULL )
   , current_flag_property_( NULL )
 {
@@ -64,7 +64,7 @@ TopmapNodeTool::TopmapNodeTool()
 // disappear from the 3D scene.  The destructor for a Tool subclass is
 // only called when the tool is removed from the toolbar with the "-"
 // button.
-TopmapNodeTool::~TopmapNodeTool()
+TopmapEdgeTool::~TopmapEdgeTool()
 {
   for( unsigned i = 0; i < flag_nodes_.size(); i++ )
   {
@@ -83,13 +83,13 @@ TopmapNodeTool::~TopmapNodeTool()
 // In this case we load a mesh object with the shape and appearance of
 // the flag, create an Ogre::SceneNode for the moving flag, and then
 // set it invisible.
-void TopmapNodeTool::onInitialize()
+void TopmapEdgeTool::onInitialize()
 {
   flag_resource_ = "package://rviz_topmap/media/flag.dae";
 
   if( rviz::loadMeshFromResource( flag_resource_ ).isNull() )
   {
-    ROS_ERROR( "TopmapNodeTool: failed to load model resource '%s'.", flag_resource_.c_str() );
+    ROS_ERROR( "TopmapEdgeTool: failed to load model resource '%s'.", flag_resource_.c_str() );
     return;
   }
 
@@ -116,7 +116,7 @@ void TopmapNodeTool::onInitialize()
 // if it were writable the flag should really change position when the
 // user edits the property.  This is a fine idea, and is possible, but
 // is left as an exercise for the reader.
-void TopmapNodeTool::activate()
+void TopmapEdgeTool::activate()
 {
   if( moving_flag_node_ )
   {
@@ -136,7 +136,7 @@ void TopmapNodeTool::activate()
 // property, so that doesn't need to be done in a separate step.  If
 // we didn't delete it here, it would stay in the list of flags when
 // we switch to another tool.
-void TopmapNodeTool::deactivate()
+void TopmapEdgeTool::deactivate()
 {
   if( moving_flag_node_ )
   {
@@ -161,7 +161,7 @@ void TopmapNodeTool::deactivate()
 // place and drop the pointer to the VectorProperty.  Dropping the
 // pointer means when the tool is deactivated the VectorProperty won't
 // be deleted, which is what we want.
-int TopmapNodeTool::processMouseEvent( rviz::ViewportMouseEvent& event )
+int TopmapEdgeTool::processMouseEvent( rviz::ViewportMouseEvent& event )
 {
   if( !moving_flag_node_ )
   {
@@ -192,7 +192,7 @@ int TopmapNodeTool::processMouseEvent( rviz::ViewportMouseEvent& event )
 }
 
 // This is a helper function to create a new flag in the Ogre scene and save its scene node in a list.
-void TopmapNodeTool::makeFlag( const Ogre::Vector3& position )
+void TopmapEdgeTool::makeFlag( const Ogre::Vector3& position )
 {
   Ogre::SceneNode* node = scene_manager_->getRootSceneNode()->createChildSceneNode();
   Ogre::Entity* entity = scene_manager_->createEntity( flag_resource_ );
@@ -218,7 +218,7 @@ void TopmapNodeTool::makeFlag( const Ogre::Vector3& position )
 // We first save the class ID to the config object so the
 // rviz::ToolManager will know what to instantiate when the config
 // file is read back in.
-void TopmapNodeTool::save( rviz::Config config ) const
+void TopmapEdgeTool::save( rviz::Config config ) const
 {
   config.mapSetValue( "Class", getClassId() );
 
@@ -248,7 +248,7 @@ void TopmapNodeTool::save( rviz::Config config ) const
 // In a tool's load() function, we don't need to read its class
 // because that has already been read and used to instantiate the
 // object before this can have been called.
-void TopmapNodeTool::load( const rviz::Config& config )
+void TopmapEdgeTool::load( const rviz::Config& config )
 {
   // Here we get the "Flags" sub-config from the tool config and loop over its entries:
   rviz::Config flags_config = config.mapGetChild( "Flags" );
@@ -289,5 +289,4 @@ void TopmapNodeTool::load( const rviz::Config& config )
 } // end namespace rviz_topmap
 
 #include <pluginlib/class_list_macros.h>
-PLUGINLIB_EXPORT_CLASS(rviz_topmap::TopmapNodeTool,rviz::Tool )
-// END_TUTORIAL
+PLUGINLIB_EXPORT_CLASS(rviz_topmap::TopmapEdgeTool,rviz::Tool )

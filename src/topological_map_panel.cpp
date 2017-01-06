@@ -45,7 +45,7 @@
 namespace rviz_topmap
 {
 
-TopmapPanel::TopmapPanel( QWidget* parent )
+TopologicalMapPanel::TopologicalMapPanel( QWidget* parent )
   : Panel( parent )
   , view_man_( NULL )
 {
@@ -85,12 +85,12 @@ TopmapPanel::TopmapPanel( QWidget* parent )
   connect( properties_view_, SIGNAL( activated( const QModelIndex& )), this, SLOT( setCurrentViewFromIndex( const QModelIndex& )));
 }
 
-void TopmapPanel::onInitialize()
+void TopologicalMapPanel::onInitialize()
 {
   setViewManager( vis_manager_->getViewManager() );
 }
 
-void TopmapPanel::setViewManager( rviz::ViewManager* view_man )
+void TopologicalMapPanel::setViewManager( rviz::ViewManager* view_man )
 {
   if( view_man_ )
   {
@@ -122,13 +122,13 @@ void TopmapPanel::setViewManager( rviz::ViewManager* view_man )
   onCurrentChanged();
 }
 
-void TopmapPanel::onTypeSelectorChanged( int selected_index )
+void TopologicalMapPanel::onTypeSelectorChanged( int selected_index )
 {
   QString class_id = camera_type_selector_->itemData( selected_index ).toString();
   view_man_->setCurrentViewControllerType( class_id );
 }
 
-void TopmapPanel::onZeroClicked()
+void TopologicalMapPanel::onZeroClicked()
 {
   if( view_man_->getCurrent() )
   {
@@ -136,7 +136,7 @@ void TopmapPanel::onZeroClicked()
   }
 }
 
-void TopmapPanel::setCurrentViewFromIndex( const QModelIndex& index )
+void TopologicalMapPanel::setCurrentViewFromIndex( const QModelIndex& index )
 {
   rviz::Property* prop = view_man_->getPropertyModel()->getProp( index );
   if( rviz::ViewController* view = qobject_cast<rviz::ViewController*>( prop ))
@@ -145,7 +145,7 @@ void TopmapPanel::setCurrentViewFromIndex( const QModelIndex& index )
   }
 }
 
-void TopmapPanel::onDeleteClicked()
+void TopologicalMapPanel::onDeleteClicked()
 {
   QList<rviz::ViewController*> views_to_delete = properties_view_->getSelectedObjects<rviz::ViewController>();
 
@@ -161,7 +161,7 @@ void TopmapPanel::onDeleteClicked()
   }
 }
 
-void TopmapPanel::renameSelected()
+void TopologicalMapPanel::renameSelected()
 {
   QList<rviz::ViewController*> views_to_rename = properties_view_->getSelectedObjects<rviz::ViewController>();
   if( views_to_rename.size() == 1 )
@@ -188,7 +188,7 @@ void TopmapPanel::renameSelected()
   }
 }
 
-void TopmapPanel::onCurrentChanged()
+void TopologicalMapPanel::onCurrentChanged()
 {
   QString formatted_class_id = rviz::ViewController::formatClassId( view_man_->getCurrent()->getClassId() );
 
@@ -202,16 +202,19 @@ void TopmapPanel::onCurrentChanged()
   properties_view_->setAnimated( true );
 }
 
-void TopmapPanel::save( rviz::Config config ) const
+void TopologicalMapPanel::save( rviz::Config config ) const
 {
   rviz::Panel::save( config );
   properties_view_->save( config );
 }
 
-void TopmapPanel::load( const rviz::Config& config )
+void TopologicalMapPanel::load( const rviz::Config& config )
 {
   rviz::Panel::load( config );
   properties_view_->load( config );
 }
 
 } // namespace rviz_topmap
+
+#include <pluginlib/class_list_macros.h>
+PLUGINLIB_EXPORT_CLASS(rviz_topmap::TopologicalMapPanel,rviz::Panel )
