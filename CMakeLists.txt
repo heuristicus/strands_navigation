@@ -35,6 +35,7 @@ add_definitions(-DQT_NO_KEYWORDS)
 ## The generated MOC files are included automatically as headers.
 set(SRC_FILES
   src/node_tool.cpp
+  src/topological_map_panel.cpp
 )
 
 ## An rviz plugin is just a shared library, so here we declare the
