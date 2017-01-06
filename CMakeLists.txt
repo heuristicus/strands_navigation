@@ -36,6 +36,8 @@ add_definitions(-DQT_NO_KEYWORDS)
 set(SRC_FILES
   src/topological_edge_tool.cpp
   src/topological_map_panel.cpp
+  src/node_controller.cpp
+  src/edge_property.cpp
 )
 
 ## An rviz plugin is just a shared library, so here we declare the

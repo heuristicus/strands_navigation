@@ -35,6 +35,10 @@
 #include "rviz/properties/property_tree_widget.h"
 #include "rviz/view_manager.h"
 
+#include "ros/ros.h"
+
+#include "strands_navigation_msgs/TopologicalMap.h"
+
 class QComboBox;
 class QModelIndex;
 class QPushButton;
@@ -50,44 +54,30 @@ namespace rviz_topmap
 {
 Q_OBJECT
 public:
-  TopologicalMapPanel( QWidget* parent = 0 );
+  TopologicalMapPanel(QWidget* parent = 0);
   virtual ~TopologicalMapPanel() {}
 
-  /** @brief Overridden from Panel.  Just calls setViewManager() with vis_manager_->getViewManager(). */
   virtual void onInitialize();
 
-  /** @brief Set the ViewManager which this panel should display and edit.
-   *
-   * If this TopologicalMapPanel is to be used with a ViewManager other than
-   * the one in the VisualizationManager sent in through
-   * Panel::initialize(), either Panel::initialize() must not be
-   * called or setViewManager() must be called after
-   * Panel::initialize(). */
-  void setViewManager( rviz::ViewManager* view_man );
-
-  /** @brief Returns the current ViewManager. */
-  rviz::ViewManager* getViewManager() const { return view_man_; }
-
   /** @brief Load configuration data, specifically the PropertyTreeWidget view settings. */
-  virtual void load( const rviz::Config& config );
+  virtual void load(const rviz::Config& config);
 
   /** @brief Save configuration data, specifically the PropertyTreeWidget view settings. */
-  virtual void save( rviz::Config config ) const;
+  virtual void save(rviz::Config config) const;
 
 private Q_SLOTS:
-  void onTypeSelectorChanged( int selected_index );
   void onDeleteClicked();
   void renameSelected();
-  void onZeroClicked();
   void onCurrentChanged();
+  void topmapCallback(const strands_navigation_msgs::TopologicalMap::ConstPtr& msg);
 
-  void setCurrentViewFromIndex( const QModelIndex& index );
+  void setCurrentNodeFromIndex(const QModelIndex& index);
 
 private:
   rviz::ViewManager* view_man_;
   rviz::PropertyTreeWidget* properties_view_;
-  QPushButton* save_button_;
-  QComboBox* camera_type_selector_;
+
+  ros::Subscriber top_map_sub;
 };
 
 } // namespace rviz_topmap
