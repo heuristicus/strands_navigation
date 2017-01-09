@@ -41,8 +41,8 @@
 
 namespace rviz_topmap
 {
-Pan::Pan( QWidget* parent )
-  : Panel( parent )
+TopologicalMapPanel::TopologicalMapPanel( QWidget* parent )
+  : rviz::Panel( parent )
   , view_man_( NULL )
 {
   camera_type_selector_ = new QComboBox;
@@ -81,11 +81,11 @@ Pan::Pan( QWidget* parent )
   connect( properties_view_, SIGNAL( activated( const QModelIndex& )), this, SLOT( setCurrentViewFromIndex( const QModelIndex& )));
 }
 
-void Pan::onInitialize()
+void TopologicalMapPanel::onInitialize()
 {
 }
 
-void Pan::setMan( Man* view_man )
+void TopologicalMapPanel::setNodeManager( NodeManager* view_man )
 {
   if( view_man_ )
   {
@@ -103,7 +103,7 @@ void Pan::setMan( Man* view_man )
     for( int i = 0; i < ids.size(); i++ )
     {
       const QString& id = ids[ i ];
-      camera_type_selector_->addItem( MyController::formatClassId( id ), id ); // send the regular-formatted id as userData.
+      camera_type_selector_->addItem( NodeController::formatClassId( id ), id ); // send the regular-formatted id as userData.
     }
 
     connect( save_button_, SIGNAL( clicked() ), view_man_, SLOT( copyCurrentToList() ));
@@ -117,13 +117,13 @@ void Pan::setMan( Man* view_man )
   onCurrentChanged();
 }
 
-void Pan::onTypeSelectorChanged( int selected_index )
+void TopologicalMapPanel::onTypeSelectorChanged( int selected_index )
 {
   QString class_id = camera_type_selector_->itemData( selected_index ).toString();
-  view_man_->setCurrentMyControllerType( class_id );
+  view_man_->setCurrentNodeControllerType( class_id );
 }
 
-void Pan::onZeroClicked()
+void TopologicalMapPanel::onZeroClicked()
 {
   if( view_man_->getCurrent() )
   {
@@ -131,18 +131,18 @@ void Pan::onZeroClicked()
   }
 }
 
-void Pan::setCurrentViewFromIndex( const QModelIndex& index )
+void TopologicalMapPanel::setCurrentViewFromIndex( const QModelIndex& index )
 {
   rviz::Property* prop = view_man_->getPropertyModel()->getProp( index );
-  if( MyController* view = qobject_cast<MyController*>( prop ))
+  if( NodeController* view = qobject_cast<NodeController*>( prop ))
   {
     view_man_->setCurrentFrom( view );
   }
 }
 
-void Pan::onDeleteClicked()
+void TopologicalMapPanel::onDeleteClicked()
 {
-  QList<MyController*> views_to_delete = properties_view_->getSelectedObjects<MyController>();
+  QList<NodeController*> views_to_delete = properties_view_->getSelectedObjects<NodeController>();
 
   for( int i = 0; i < views_to_delete.size(); i++ )
   {
@@ -156,12 +156,12 @@ void Pan::onDeleteClicked()
   }
 }
 
-void Pan::renameSelected()
+void TopologicalMapPanel::renameSelected()
 {
-  QList<MyController*> views_to_rename = properties_view_->getSelectedObjects<MyController>();
+  QList<NodeController*> views_to_rename = properties_view_->getSelectedObjects<NodeController>();
   if( views_to_rename.size() == 1 )
   {
-    MyController* view = views_to_rename[ 0 ];
+    NodeController* view = views_to_rename[ 0 ];
 
     // TODO: should eventually move to a scheme where the CURRENT view
     // is not in the same list as the saved views, at which point this
@@ -183,9 +183,9 @@ void Pan::renameSelected()
   }
 }
 
-void Pan::onCurrentChanged()
+void TopologicalMapPanel::onCurrentChanged()
 {
-  QString formatted_class_id = MyController::formatClassId( view_man_->getCurrent()->getClassId() );
+  QString formatted_class_id = NodeController::formatClassId( view_man_->getCurrent()->getClassId() );
 
   // Make sure the type selector shows the type of the current view.
   // This is only here in case the type is changed programmatically,
@@ -197,13 +197,13 @@ void Pan::onCurrentChanged()
   properties_view_->setAnimated( true );
 }
 
-void Pan::save( rviz::Config config ) const
+void TopologicalMapPanel::save( rviz::Config config ) const
 {
   rviz::Panel::save( config );
   properties_view_->save( config );
 }
 
-void Pan::load( const rviz::Config& config )
+void TopologicalMapPanel::load( const rviz::Config& config )
 {
   rviz::Panel::load( config );
   properties_view_->load( config );

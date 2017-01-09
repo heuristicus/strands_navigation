@@ -27,8 +27,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef RVIZ_VIEWS_PANEL_H
-#define RVIZ_VIEWS_PANEL_H
+#ifndef TOPMAP_PANEL_H
+#define TOPMAP_PANEL_H
 
 #include "rviz/panel.h"
 #include "node_manager.h"
@@ -43,28 +43,28 @@ namespace rviz_topmap {
 /**
  * @brief Panel for choosing the view controller and saving and restoring
  * viewpoints.
- */
-class Pan: public rviz::Panel
+RR */
+class TopologicalMapPanel: public rviz::Panel
 {
 Q_OBJECT
 public:
-  Pan( QWidget* parent = 0 );
-  virtual ~Pan() {}
+  TopologicalMapPanel( QWidget* parent = 0 );
+  virtual ~TopologicalMapPanel() {}
 
-  /** @brief Overridden from Panel.  Just calls setMan() with vis_manager_->getMan(). */
+  /** @brief Overridden from TopologicalMapPanel.  Just calls setMan() with vis_manager_->getNodeManager(). */
   virtual void onInitialize();
 
-  /** @brief Set the Man which this panel should display and edit.
+  /** @brief Set the NodeManager which this panel should display and edit.
    *
-   * If this Pan is to be used with a Man other than
-   * the one in the VisualizationManager sent in through
-   * Panel::initialize(), either Panel::initialize() must not be
-   * called or setMan() must be called after
-   * Panel::initialize(). */
-  void setMan( Man* view_man );
+   * If this TopologicalMapPanel is to be used with a NodeManager other than
+   * the one in the NodeManager sent in through
+   * TopologicalMapPanel::initialize(), either TopologicalMapPanelel::initialize() must not be
+   * called or setNodeManager() must be called after
+   * TopologicalMapPanel::initialize(). */
+  void setNodeManager( NodeManager* view_man );
 
-  /** @brief Returns the current Man. */
-  Man* getMan() const { return view_man_; }
+  /** @brief Returns the current NodeManager. */
+  NodeManager* getNodeManager() const { return view_man_; }
 
   /** @brief Load configuration data, specifically the PropertyTreeWidget view settings. */
   virtual void load( const rviz::Config& config );
@@ -82,7 +82,7 @@ private Q_SLOTS:
   void setCurrentViewFromIndex( const QModelIndex& index );
 
 private:
-  Man* view_man_;
+  NodeManager* view_man_;
   rviz::PropertyTreeWidget* properties_view_;
   QPushButton* save_button_;
   QComboBox* camera_type_selector_;
@@ -90,4 +90,4 @@ private:
 
 } // namespace rviz_topmap
 
-#endif // RVIZ_VIEWS_PANEL_H
+#endif // TOPMAP_PANEL_H

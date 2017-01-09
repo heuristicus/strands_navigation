@@ -26,8 +26,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef VIEW_MANAGER_H
-#define VIEW_MANAGER_H
+#ifndef NODE_MANAGER_H
+#define NODE_MANAGER_H
 
 #include "node_controller.h"
 
@@ -47,70 +47,70 @@
 
 namespace rviz_topmap
 {
-class ContCont;
+class NodeControllerContainer;
 
-class Man: public QObject
+class NodeManager: public QObject
 {
 Q_OBJECT
 public:
-  Man( rviz::DisplayContext* context );
-  ~Man();
+  NodeManager( rviz::DisplayContext* context );
+  ~NodeManager();
 
   void initialize();
 
   void update( float wall_dt, float ros_dt );
 
-  /** @brief Return the current MyController in use for the main
+  /** @brief Return the current NodeController in use for the main
    * RenderWindow. */
-  MyController* getCurrent() const;
+  NodeController* getCurrent() const;
 
-  MyController* create( const QString& type );
+  NodeController* create( const QString& type );
 
   int getNumViews() const;
 
-  MyController* getViewAt( int index ) const;
+  NodeController* getViewAt( int index ) const;
 
-  void add( MyController* view, int index = -1 );
+  void add( NodeController* view, int index = -1 );
 
-  /** @brief Remove the given MyController from the list and return
+  /** @brief Remove the given NodeController from the list and return
    * it.  If it is not in the list, NULL is returned and nothing
    * changes. */
-  MyController* take( MyController* view );
+  NodeController* take( NodeController* view );
 
-  /** @brief Remove the MyController at the given index from the
+  /** @brief Remove the NodeController at the given index from the
    * list and return it.  If the index is not valid, NULL is returned
    * and nothing changes. */
-  MyController* takeAt( int index );
+  NodeController* takeAt( int index );
 
   rviz::PropertyTreeModel* getPropertyModel() { return property_model_; }
 
   void load( const rviz::Config& config );
   void save( rviz::Config config ) const;
 
-  /** @brief Make a copy of @a view_to_copy and install that as the new current MyController. */
-  void setCurrentFrom( MyController* view_to_copy );
+  /** @brief Make a copy of @a view_to_copy and install that as the new current NodeController. */
+  void setCurrentFrom( NodeController* view_to_copy );
 
   /** @brief Return a copy of source, made by saving source to
    * a Config and instantiating and loading a new one from that. */
-  MyController* copy( MyController* source );
+  NodeController* copy( NodeController* source );
 
-  rviz::PluginlibFactory<MyController>* getFactory() const { return factory_; }
+  rviz::PluginlibFactory<NodeController>* getFactory() const { return factory_; }
 
   /** @brief Set the 3D view widget whose view will be controlled by
-   * MyController instances from by this Man. */
+   * NodeController instances from by this NodeManager. */
   void setRenderPanel( rviz::RenderPanel* render_panel );
 
-  /** @brief Return the 3D view widget managed by this Man. */
+  /** @brief Return the 3D view widget managed by this NodeManager. */
   rviz::RenderPanel* getRenderPanel() const { return render_panel_; }
 
 public Q_SLOTS:
 
-  /** @brief Make a copy of the current MyController and add it to the end of the list of saved views. */
+  /** @brief Make a copy of the current NodeController and add it to the end of the list of saved views. */
   void copyCurrentToList();
 
   /** @brief Create a new view controller of the given type and set it
    * up to mimic and replace the previous current view. */
-  void setCurrentMyControllerType( const QString& new_class_id );
+  void setCurrentNodeControllerType( const QString& new_class_id );
 
 Q_SIGNALS:
   void configChanged();
@@ -128,26 +128,26 @@ private:
    * This calls mimic() or transitionFrom() on the new controller,
    * deletes the previous controller (if one existed), and tells the
    * RenderPanel about the new controller. */
-  void setCurrent( MyController* new_current, bool mimic_view );
+  void setCurrent( NodeController* new_current, bool mimic_view );
 
   rviz::DisplayContext* context_;
-  ContCont* root_property_;
+  NodeControllerContainer* root_property_;
   rviz::PropertyTreeModel* property_model_;
-  rviz::PluginlibFactory<MyController>* factory_;
-  MyController* current_;
+  rviz::PluginlibFactory<NodeController>* factory_;
+  NodeController* current_;
   rviz::RenderPanel* render_panel_;
 };
 
-/** @brief MyControllerainer property for MyControllers which gets the
+/** @brief NodeControllerainer property for NodeControllers which gets the
  * drag/drop right for the funky way Current-View is always the first
  * entry. */
-class ContCont: public rviz::Property
+class NodeControllerContainer: public rviz::Property
 {
 Q_OBJECT
 public:
   Qt::ItemFlags getViewFlags( int column ) const;
 
-  /** @brief Add a child MyController.
+  /** @brief Add a child NodeController.
    * @param child The child to add.
    * @param index [optional] The index at which to add the child.  If
    *   less than 0 or greater than the number of child properties, the
@@ -155,7 +155,7 @@ public:
    *
    * This notifies the model about the addition.
    *
-   * This is overridden from Property to keep saved MyControllers from being added
+   * This is overridden from Property to keep saved NodeControllers from being added
    * at index 0, where the Current view belongs. */
   virtual void addChild( rviz::Property* child, int index = -1 );
 
@@ -164,4 +164,4 @@ public:
 
 } // end namespace rviz_topmap
 
-#endif // VIEW_MANAGER_H
+#endif // NODE_MANAGER_H

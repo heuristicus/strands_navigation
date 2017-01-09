@@ -31,11 +31,11 @@
 
 namespace rviz_topmap
 {
-Man::Man( rviz::DisplayContext* context )
+NodeManager::NodeManager( rviz::DisplayContext* context )
   : context_( context )
-  , root_property_( new ContCont )
+  , root_property_( new NodeControllerContainer )
   , property_model_( new rviz::PropertyTreeModel( root_property_ ))
-  , factory_( new rviz::PluginlibFactory<MyController>( "rviz_topmap", "rviz_topmap::MyController" ))
+  , factory_( new rviz::PluginlibFactory<NodeController>( "rviz_topmap", "rviz_topmap::NodeController" ))
   , current_( NULL )
   , render_panel_( NULL )
 {
@@ -43,18 +43,18 @@ Man::Man( rviz::DisplayContext* context )
   connect( property_model_, SIGNAL( configChanged() ), this, SIGNAL( configChanged() ));
 }
 
-Man::~Man()
+NodeManager::~NodeManager()
 {
   delete property_model_;
   delete factory_;
 }
 
-void Man::initialize()
+void NodeManager::initialize()
 {
   setCurrent( create( "rviz/Orbit" ), false );
 }
 
-void Man::update( float wall_dt, float ros_dt )
+void NodeManager::update( float wall_dt, float ros_dt )
 {
   if( getCurrent() )
   {
@@ -62,42 +62,42 @@ void Man::update( float wall_dt, float ros_dt )
   }
 }
 
-MyController* Man::create( const QString& class_id )
+NodeController* NodeManager::create( const QString& class_id )
 {
   QString error;
-  MyController* view = factory_->make( class_id, &error );
+  NodeController* view = factory_->make( class_id, &error );
   // if( !view )
   // {
-  //   view = new FailedMyController( class_id, error );
+  //   view = new FailedNodeController( class_id, error );
   // }
   view->initialize( context_ );
 
   return view;
 }
 
-MyController* Man::getCurrent() const
+NodeController* NodeManager::getCurrent() const
 {
   return current_;
 }
 
-void Man::setCurrentFrom( MyController* source_view )
+void NodeManager::setCurrentFrom( NodeController* source_view )
 {
   if( source_view == NULL )
   {
     return;
   }
 
-  MyController* previous = getCurrent();
+  NodeController* previous = getCurrent();
   if( source_view != previous )
   {
-    MyController* new_current = copy( source_view );
+    NodeController* new_current = copy( source_view );
 
     setCurrent( new_current, false );
     Q_EMIT configChanged();
   }
 }
 
-void Man::onCurrentDestroyed( QObject* obj )
+void NodeManager::onCurrentDestroyed( QObject* obj )
 {
   if( obj == current_ )
   {
@@ -105,9 +105,9 @@ void Man::onCurrentDestroyed( QObject* obj )
   }
 }
 
-void Man::setCurrent( MyController* new_current, bool mimic_view )
+void NodeManager::setCurrent( NodeController* new_current, bool mimic_view )
 {
-  MyController* previous = getCurrent();
+  NodeController* previous = getCurrent();
   if( previous )
   {
     if( mimic_view )
@@ -128,40 +128,40 @@ void Man::setCurrent( MyController* new_current, bool mimic_view )
 
   if( render_panel_ )
   {
-    // This setMyController() can indirectly call
-    // Man::update(), so make sure getCurrent() will return the
+    // This setNodeController() can indirectly call
+    // NodeManager::update(), so make sure getCurrent() will return the
     // new one by this point.
     // render_panel_->setViewController( new_current );
   }
   Q_EMIT currentChanged();
 }
 
-void Man::setCurrentMyControllerType( const QString& new_class_id )
+void NodeManager::setCurrentNodeControllerType( const QString& new_class_id )
 {
   setCurrent( create( new_class_id ), true );
 }
 
-void Man::copyCurrentToList()
+void NodeManager::copyCurrentToList()
 {
-  MyController* current = getCurrent();
+  NodeController* current = getCurrent();
   if( current )
   {
-    MyController* new_copy = copy( current );
+    NodeController* new_copy = copy( current );
     new_copy->setName( factory_->getClassName( new_copy->getClassId() ));
     root_property_->addChild( new_copy );
   }
 }
 
-MyController* Man::getViewAt( int index ) const
+NodeController* NodeManager::getViewAt( int index ) const
 {
   if( index < 0 )
   {
     index = 0;
   }
-  return qobject_cast<MyController*>( root_property_->childAt( index + 1 ));
+  return qobject_cast<NodeController*>( root_property_->childAt( index + 1 ));
 }
 
-int Man::getNumViews() const
+int NodeManager::getNumViews() const
 {
   int count = root_property_->numChildren();
   if( count <= 0 )
@@ -174,7 +174,7 @@ int Man::getNumViews() const
   }
 }
 
-void Man::add( MyController* view, int index )
+void NodeManager::add( NodeController* view, int index )
 {
   if( index < 0 )
   {
@@ -187,34 +187,34 @@ void Man::add( MyController* view, int index )
   property_model_->getRoot()->addChild( view, index );
 }
 
-MyController* Man::take( MyController* view )
+NodeController* NodeManager::take( NodeController* view )
 {
   for( int i = 0; i < getNumViews(); i++ )
   {
     if( getViewAt( i ) == view )
     {
-      return qobject_cast<MyController*>( root_property_->takeChildAt( i + 1 ));
+      return qobject_cast<NodeController*>( root_property_->takeChildAt( i + 1 ));
     }
   }
   return NULL;
 }
 
-MyController* Man::takeAt( int index )
+NodeController* NodeManager::takeAt( int index )
 {
   if( index < 0 )
   {
     return NULL;
   }
-  return qobject_cast<MyController*>( root_property_->takeChildAt( index + 1 ));
+  return qobject_cast<NodeController*>( root_property_->takeChildAt( index + 1 ));
 }
 
-void Man::load( const rviz::Config& config )
+void NodeManager::load( const rviz::Config& config )
 {
   rviz::Config current_config = config.mapGetChild( "Current" );
   QString class_id;
   if( current_config.mapGetString( "Class", &class_id ))
   {
-    MyController* new_current = create( class_id );
+    NodeController* new_current = create( class_id );
     new_current->load( current_config );
     setCurrent( new_current, false );
   }
@@ -228,14 +228,14 @@ void Man::load( const rviz::Config& config )
     
     if( view_config.mapGetString( "Class", &class_id ))
     {
-      MyController* view = create( class_id );
+      NodeController* view = create( class_id );
       view->load( view_config );
       add( view );
     }
   }
 }
 
-void Man::save( rviz::Config config ) const
+void NodeManager::save( rviz::Config config ) const
 {
   getCurrent()->save( config.mapMakeChild( "Current" ));
 
@@ -246,28 +246,28 @@ void Man::save( rviz::Config config ) const
   }
 }
 
-MyController* Man::copy( MyController* source )
+NodeController* NodeManager::copy( NodeController* source )
 {
   rviz::Config config;
   source->save( config );
 
-  MyController* copy_of_source = create( source->getClassId() );
+  NodeController* copy_of_source = create( source->getClassId() );
   copy_of_source->load( config );
 
   return copy_of_source;
 }
 
-void Man::setRenderPanel( rviz::RenderPanel* render_panel )
+void NodeManager::setRenderPanel( rviz::RenderPanel* render_panel )
 {
   render_panel_ = render_panel;
 }
 
-Qt::ItemFlags ContCont::getViewFlags( int column ) const
+Qt::ItemFlags NodeControllerContainer::getViewFlags( int column ) const
 {
   return Property::getViewFlags( column ) | Qt::ItemIsDropEnabled;
 }
 
-void ContCont::addChild( rviz::Property* child, int index )
+void NodeControllerContainer::addChild( rviz::Property* child, int index )
 {
   if( index == 0 )
   {
@@ -276,7 +276,7 @@ void ContCont::addChild( rviz::Property* child, int index )
   rviz::Property::addChild( child, index );
 }
 
-void ContCont::addChildToFront( rviz::Property* child )
+void NodeControllerContainer::addChildToFront( rviz::Property* child )
 {
   rviz::Property::addChild( child, 0 );
 }

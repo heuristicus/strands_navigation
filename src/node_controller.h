@@ -27,8 +27,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef RVIZ_VIEW_CONTROLLER_H
-#define RVIZ_VIEW_CONTROLLER_H
+#ifndef TOPMAP_NODE_CONTROLLER_H
+#define TOPMAP_NODE_CONTROLLER_H
 
 #include <string>
 
@@ -58,12 +58,12 @@
 class QKeyEvent;
 
 namespace rviz_topmap {
-class MyController: public rviz::Property
+class NodeController: public rviz::Property
 {
 Q_OBJECT
 public:
-  MyController();
-  virtual ~MyController();
+  NodeController();
+  virtual ~NodeController();
 
   /** @brief Do all setup that can't be done in the constructor.
    *
@@ -83,7 +83,7 @@ public:
 
   /** @brief Called by RenderPanel when this view controller is about to be used.
    *
-   * There is no deactivate() because MyControllers leaving
+   * There is no deactivate() because NodeControllers leaving
    * "current" are destroyed.  Put any cleanup in the destructor. */
   void activate();
 
@@ -128,20 +128,20 @@ public:
    * @a source_view must return a valid @c Ogre::Camera* from getCamera().
    *
    * This base class implementation does nothing. */
-  virtual void mimic( MyController* source_view )
+  virtual void mimic( NodeController* source_view )
   {
     (void) source_view;
   }
 
-  /** @brief Called by ViewManager when this MyController is being made current.
+  /** @brief Called by ViewManager when this NodeController is being made current.
    * @param previous_view is the previous "current" view, and will not be NULL.
    *
-   * This gives MyController subclasses an opportunity to implement
+   * This gives NodeController subclasses an opportunity to implement
    * a smooth transition from a previous viewpoint to the new
    * viewpoint.
    *
    * This base class implementation does nothing. */
-  virtual void transitionFrom( MyController* previous_view )
+  virtual void transitionFrom( NodeController* previous_view )
   {
     (void) previous_view;
   }
@@ -178,7 +178,7 @@ private Q_SLOTS:
 
 protected:
   /** @brief Do subclass-specific initialization.  Called by
-   * MyController::initialize after context_ and camera_ are set.
+   * NodeController::initialize after context_ and camera_ are set.
    * Default implementation does nothing. */
   virtual void onInitialize() {}
 
@@ -224,4 +224,4 @@ private:
 
 } // end namespace rviz_topmap
 
-#endif // RVIZ_VIEW_CONTROLLER_H
+#endif // TOPMAP_NODE_CONTROLLER_H

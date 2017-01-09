@@ -32,7 +32,7 @@
 
 namespace rviz_topmap
 {
-MyController::MyController()
+NodeController::NodeController()
   : context_( NULL )
   , camera_( NULL )
   , is_active_( false )
@@ -60,13 +60,13 @@ MyController::MyController()
                                       stereo_enable_, SLOT( updateStereoProperties() ), this );
 }
 
-void MyController::initialize( rviz::DisplayContext* context )
+void NodeController::initialize( rviz::DisplayContext* context )
 {
   context_ = context;
 
   std::stringstream ss;
   static int count = 0;
-  ss << "MyControllerCamera" << count++;
+  ss << "NodeControllerCamera" << count++;
   camera_ = context_->getSceneManager()->createCamera( ss.str() );
   context_->getSceneManager()->getRootSceneNode()->attachObject( camera_ );
 
@@ -96,12 +96,12 @@ void MyController::initialize( rviz::DisplayContext* context )
   }
 }
 
-MyController::~MyController()
+NodeController::~NodeController()
 {
   context_->getSceneManager()->destroyCamera( camera_ );
 }
 
-QString MyController::formatClassId( const QString& class_id )
+QString NodeController::formatClassId( const QString& class_id )
 {
   QStringList id_parts = class_id.split( "/" );
   if( id_parts.size() != 2 )
@@ -117,7 +117,7 @@ QString MyController::formatClassId( const QString& class_id )
   }
 }
 
-QVariant MyController::getViewData( int column, int role ) const
+QVariant NodeController::getViewData( int column, int role ) const
 {
   if ( role == Qt::TextColorRole )
   {
@@ -143,7 +143,7 @@ QVariant MyController::getViewData( int column, int role ) const
   return rviz::Property::getViewData( column, role );
 }
 
-Qt::ItemFlags MyController::getViewFlags( int column ) const
+Qt::ItemFlags NodeController::getViewFlags( int column ) const
 {
   if( is_active_ )
   {
@@ -155,18 +155,18 @@ Qt::ItemFlags MyController::getViewFlags( int column ) const
   }
 }
 
-void MyController::activate()
+void NodeController::activate()
 {
   is_active_ = true;
   onActivate();
 }
 
-void MyController::emitConfigChanged()
+void NodeController::emitConfigChanged()
 {
   Q_EMIT configChanged();
 }
 
-void MyController::load( const rviz::Config& config )
+void NodeController::load( const rviz::Config& config )
 {
   // Load the name by hand.
   QString name;
@@ -178,7 +178,7 @@ void MyController::load( const rviz::Config& config )
   rviz::Property::load( config );
 }
 
-void MyController::save( rviz::Config config ) const
+void NodeController::save( rviz::Config config ) const
 {
   config.mapSetValue( "Class", getClassId() );
   config.mapSetValue( "Name", getName() );
@@ -186,7 +186,7 @@ void MyController::save( rviz::Config config ) const
   rviz::Property::save( config );
 }
 
-void MyController::handleKeyEvent( QKeyEvent* event, rviz::RenderPanel* panel )
+void NodeController::handleKeyEvent( QKeyEvent* event, rviz::RenderPanel* panel )
 {
   if( event->key() == Qt::Key_F &&
       panel->getViewport() &&
@@ -208,18 +208,18 @@ void MyController::handleKeyEvent( QKeyEvent* event, rviz::RenderPanel* panel )
   }
 }
 
-void MyController::setCursor( CursorType cursor_type )
+void NodeController::setCursor( CursorType cursor_type )
 {
   cursor_=standard_cursors_[cursor_type];
 }
 
-void MyController::lookAt( float x, float y, float z )
+void NodeController::lookAt( float x, float y, float z )
 {
   Ogre::Vector3 point( x, y, z );
   lookAt( point );
 }
 
-void MyController::setStatus( const QString & message )
+void NodeController::setStatus( const QString & message )
 {
   if ( context_ )
   {
@@ -227,13 +227,13 @@ void MyController::setStatus( const QString & message )
   }
 }
 
-void MyController::updateNearClipDistance()
+void NodeController::updateNearClipDistance()
 {
   float n = near_clip_property_->getFloat();
   camera_->setNearClipDistance( n );
 }
 
-void MyController::updateStereoProperties()
+void NodeController::updateStereoProperties()
 {
   if (stereo_enable_->getBool())
   {
