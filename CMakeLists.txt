@@ -37,6 +37,7 @@ set(SRC_FILES
   src/topological_edge_tool.cpp
   src/topological_map_panel.cpp
   src/node_controller.cpp
+  src/node_manager.cpp
   src/edge_property.cpp
 )
 

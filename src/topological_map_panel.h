@@ -27,59 +27,67 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef TOPOLOGICAL_MAP_PANEL_H
-#define TOPOLOGICAL_MAP_PANEL_H
+#ifndef RVIZ_VIEWS_PANEL_H
+#define RVIZ_VIEWS_PANEL_H
 
 #include "rviz/panel.h"
-#include "rviz/config.h"
+#include "node_manager.h"
+
 #include "rviz/properties/property_tree_widget.h"
-#include "rviz/view_manager.h"
-
-#include "ros/ros.h"
-
-#include "strands_navigation_msgs/TopologicalMap.h"
 
 class QComboBox;
 class QModelIndex;
 class QPushButton;
 
-namespace rviz_topmap
-{
-
+namespace rviz_topmap {
 /**
  * @brief Panel for choosing the view controller and saving and restoring
  * viewpoints.
  */
- class TopologicalMapPanel: public rviz::Panel
+class Pan: public rviz::Panel
 {
 Q_OBJECT
 public:
-  TopologicalMapPanel(QWidget* parent = 0);
-  virtual ~TopologicalMapPanel() {}
+  Pan( QWidget* parent = 0 );
+  virtual ~Pan() {}
 
+  /** @brief Overridden from Panel.  Just calls setMan() with vis_manager_->getMan(). */
   virtual void onInitialize();
 
+  /** @brief Set the Man which this panel should display and edit.
+   *
+   * If this Pan is to be used with a Man other than
+   * the one in the VisualizationManager sent in through
+   * Panel::initialize(), either Panel::initialize() must not be
+   * called or setMan() must be called after
+   * Panel::initialize(). */
+  void setMan( Man* view_man );
+
+  /** @brief Returns the current Man. */
+  Man* getMan() const { return view_man_; }
+
   /** @brief Load configuration data, specifically the PropertyTreeWidget view settings. */
-  virtual void load(const rviz::Config& config);
+  virtual void load( const rviz::Config& config );
 
   /** @brief Save configuration data, specifically the PropertyTreeWidget view settings. */
-  virtual void save(rviz::Config config) const;
+  virtual void save( rviz::Config config ) const;
 
 private Q_SLOTS:
+  void onTypeSelectorChanged( int selected_index );
   void onDeleteClicked();
   void renameSelected();
+  void onZeroClicked();
   void onCurrentChanged();
-  void topmapCallback(const strands_navigation_msgs::TopologicalMap::ConstPtr& msg);
 
-  void setCurrentNodeFromIndex(const QModelIndex& index);
+  void setCurrentViewFromIndex( const QModelIndex& index );
 
 private:
-  rviz::ViewManager* view_man_;
+  Man* view_man_;
   rviz::PropertyTreeWidget* properties_view_;
-
-  ros::Subscriber top_map_sub;
+  QPushButton* save_button_;
+  QComboBox* camera_type_selector_;
 };
 
 } // namespace rviz_topmap
 
-#endif // TOPOLOGICAL_MAP_PANEL_H
+#endif // RVIZ_VIEWS_PANEL_H
