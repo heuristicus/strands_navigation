@@ -48,7 +48,7 @@ class TopologicalMapPanel: public rviz::Panel
 {
 Q_OBJECT
 public:
-  TopologicalMapPanel( QWidget* parent = 0 );
+  TopologicalMapPanel(QWidget* parent = 0);
   virtual ~TopologicalMapPanel() {}
 
   /** @brief Overridden from TopologicalMapPanel.  Just calls setMan() with vis_manager_->getNodeManager(). */
@@ -61,25 +61,25 @@ public:
    * TopologicalMapPanel::initialize(), either TopologicalMapPanelel::initialize() must not be
    * called or setNodeManager() must be called after
    * TopologicalMapPanel::initialize(). */
-  void setNodeManager( NodeManager* view_man );
+  void setNodeManager(NodeManager* view_man);
 
   /** @brief Returns the current NodeManager. */
   NodeManager* getNodeManager() const { return view_man_; }
 
   /** @brief Load configuration data, specifically the PropertyTreeWidget view settings. */
-  virtual void load( const rviz::Config& config );
+  virtual void load(const rviz::Config& config);
 
   /** @brief Save configuration data, specifically the PropertyTreeWidget view settings. */
-  virtual void save( rviz::Config config ) const;
+  virtual void save(rviz::Config config) const;
 
 private Q_SLOTS:
-  void onTypeSelectorChanged( int selected_index );
+  void onTypeSelectorChanged(int selected_index);
   void onDeleteClicked();
   void renameSelected();
   void onZeroClicked();
   void onCurrentChanged();
 
-  void setCurrentViewFromIndex( const QModelIndex& index );
+  void setCurrentViewFromIndex(const QModelIndex& index);
 
 private:
   NodeManager* view_man_;

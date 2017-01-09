@@ -70,16 +70,16 @@ public:
    * Creates camera_ and attaches it to the root scene node.
    *
    * Calls onInitialize() just before returning. */
-  void initialize( rviz::DisplayContext* context );
+  void initialize(rviz::DisplayContext* context);
 
-  static QString formatClassId( const QString& class_id );
+  static QString formatClassId(const QString& class_id);
 
   /** @brief Overridden from Property to give a different background
    * color and bold font if this view is active. */
-  virtual QVariant getViewData( int column, int role ) const;
+  virtual QVariant getViewData(int column, int role) const;
 
   /** @brief Overridden from Property to make this draggable if it is not active. */
-  virtual Qt::ItemFlags getViewFlags( int column ) const;
+  virtual Qt::ItemFlags getViewFlags(int column) const;
 
   /** @brief Called by RenderPanel when this view controller is about to be used.
    *
@@ -104,15 +104,15 @@ public:
    *
    * The default implementation here handles the "F" (focus on object)
    * and "Z" (zero - reset) keys. */
-  virtual void handleKeyEvent( QKeyEvent* event, rviz::RenderPanel* panel );
+  virtual void handleKeyEvent(QKeyEvent* event, rviz::RenderPanel* panel);
 
   /** @brief Convenience function which calls lookAt(Ogre::Vector3). */
-  void lookAt( float x, float y, float z );
+  void lookAt(float x, float y, float z);
 
   /** @brief This should be implemented in each subclass to aim the
    * camera at the given point in space (relative to the fixed
    * frame). */
-  virtual void lookAt( const Ogre::Vector3& point )
+  virtual void lookAt(const Ogre::Vector3& point)
   {
     (void) point;
   }
@@ -128,7 +128,7 @@ public:
    * @a source_view must return a valid @c Ogre::Camera* from getCamera().
    *
    * This base class implementation does nothing. */
-  virtual void mimic( NodeController* source_view )
+  virtual void mimic(NodeController* source_view)
   {
     (void) source_view;
   }
@@ -141,7 +141,7 @@ public:
    * viewpoint.
    *
    * This base class implementation does nothing. */
-  virtual void transitionFrom( NodeController* previous_view )
+  virtual void transitionFrom(NodeController* previous_view)
   {
     (void) previous_view;
   }
@@ -158,10 +158,10 @@ public:
 
   /** @brief Set the class identifier used to create this instance.
    * Typically this will be set by the factory object which created it. */
-  virtual void setClassId( const QString& class_id ) { class_id_ = class_id; }
+  virtual void setClassId(const QString& class_id) { class_id_ = class_id; }
 
-  virtual void load( const rviz::Config& config );
-  virtual void save( rviz::Config config ) const;
+  virtual void load(const rviz::Config& config);
+  virtual void save(rviz::Config config) const;
 
   bool isActive() const { return is_active_; }
 
@@ -190,10 +190,10 @@ protected:
 
   // choose a cursor from the standard set
   enum CursorType{ Default, Rotate2D, Rotate3D, MoveXY, MoveZ, Zoom, Crosshair };
-  void setCursor( CursorType cursor_type );
+  void setCursor(CursorType cursor_type);
 
   // set a custom cursor
-  void setCursor( QCursor cursor ) { cursor_=cursor; }
+  void setCursor(QCursor cursor) { cursor_=cursor; }
 
   rviz::DisplayContext* context_;
   Ogre::Camera* camera_;
@@ -211,7 +211,7 @@ protected:
   rviz::FloatProperty* stereo_eye_separation_;
   rviz::FloatProperty* stereo_focal_distance_;
 
-  void setStatus( const QString & message );
+  void setStatus(const QString & message);
 
 private:
 
