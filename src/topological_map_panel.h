@@ -32,6 +32,7 @@
 
 #include "rviz/panel.h"
 #include "node_manager.h"
+#include "ros/ros.h"
 
 #include "rviz/properties/property_tree_widget.h"
 
@@ -61,10 +62,10 @@ public:
    * TopologicalMapPanel::initialize(), either TopologicalMapPanelel::initialize() must not be
    * called or setNodeManager() must be called after
    * TopologicalMapPanel::initialize(). */
-  void setNodeManager(NodeManager* view_man);
+  void setNodeManager(NodeManager* node_man);
 
   /** @brief Returns the current NodeManager. */
-  NodeManager* getNodeManager() const { return view_man_; }
+  NodeManager* getNodeManager() const { return node_man_; }
 
   /** @brief Load configuration data, specifically the PropertyTreeWidget view settings. */
   virtual void load(const rviz::Config& config);
@@ -73,19 +74,13 @@ public:
   virtual void save(rviz::Config config) const;
 
 private Q_SLOTS:
-  void onTypeSelectorChanged(int selected_index);
   void onDeleteClicked();
   void renameSelected();
-  void onZeroClicked();
+  void addNew();
   void onCurrentChanged();
-
-  void setCurrentViewFromIndex(const QModelIndex& index);
-
 private:
-  NodeManager* view_man_;
+  NodeManager* node_man_;
   rviz::PropertyTreeWidget* properties_view_;
-  QPushButton* save_button_;
-  QComboBox* camera_type_selector_;
 };
 
 } // namespace rviz_topmap

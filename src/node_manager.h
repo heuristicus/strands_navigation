@@ -30,6 +30,7 @@
 #define NODE_MANAGER_H
 
 #include "node_controller.h"
+#include "ros/ros.h"
 
 #include <stdio.h>
 #include <sstream>
@@ -131,7 +132,7 @@ private:
   void setCurrent(NodeController* new_current, bool mimic_view);
 
   rviz::DisplayContext* context_;
-  NodeControllerContainer* root_property_;
+  NodeController* root_property_;
   rviz::PropertyTreeModel* property_model_;
   rviz::PluginlibFactory<NodeController>* factory_;
   NodeController* current_;

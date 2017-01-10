@@ -31,16 +31,18 @@
 
 namespace rviz_topmap
 {
-NodeManager::NodeManager( rviz::DisplayContext* context)
-  : context_( context)
-  , root_property_( new NodeControllerContainer)
-  , property_model_( new rviz::PropertyTreeModel( root_property_))
-  , factory_( new rviz::PluginlibFactory<NodeController>( "rviz_topmap", "rviz_topmap::NodeController"))
-  , current_( NULL)
-  , render_panel_( NULL)
+NodeManager::NodeManager(rviz::DisplayContext* context)
+  : context_(context)
+  , root_property_(new NodeController)
+  , property_model_(new rviz::PropertyTreeModel(root_property_))
+  , factory_(new rviz::PluginlibFactory<NodeController>("rviz_topmap", "rviz_topmap::NodeController"))
+  , current_(NULL)
+  , render_panel_(NULL)
 {
-  property_model_->setDragDropClass( "view-controller");
-  connect( property_model_, SIGNAL( configChanged()), this, SIGNAL( configChanged()));
+  ROS_INFO("Initialising node manager");
+  property_model_->setDragDropClass("node-controller");
+  // connect(property_model_, SIGNAL(configChanged()), this, SIGNAL(configChanged()));
+  // add(new NodeController, -1);
 }
 
 NodeManager::~NodeManager()
@@ -51,28 +53,28 @@ NodeManager::~NodeManager()
 
 void NodeManager::initialize()
 {
-  setCurrent( create( "rviz/Orbit"), false);
+  setCurrent(create("rviz/Orbit"), false);
 }
 
-void NodeManager::update( float wall_dt, float ros_dt)
+void NodeManager::update(float wall_dt, float ros_dt)
 {
-  if( getCurrent())
+  if(getCurrent())
   {
-    getCurrent()->update( wall_dt, ros_dt);
+    getCurrent()->update(wall_dt, ros_dt);
   }
 }
 
-NodeController* NodeManager::create( const QString& class_id)
+NodeController* NodeManager::create(const QString& class_id)
 {
-  QString error;
-  NodeController* view = factory_->make( class_id, &error);
-  // if( !view)
+  // QString error;
+  // NodeController* view = factory_->make(class_id, &error);
+  // if(!view)
   // {
-  //   view = new FailedNodeController( class_id, error);
+  //   view = new FailedNodeController(class_id, error);
   // }
-  view->initialize( context_);
+  // view->initialize();
 
-  return view;
+  // return view;
 }
 
 NodeController* NodeManager::getCurrent() const
@@ -80,98 +82,98 @@ NodeController* NodeManager::getCurrent() const
   return current_;
 }
 
-void NodeManager::setCurrentFrom( NodeController* source_view)
+void NodeManager::setCurrentFrom(NodeController* source_view)
 {
-  if(source_view == NULL)
-  {
-    return;
-  }
+  // if(source_view == NULL)
+  // {
+  //   return;
+  // }
 
-  NodeController* previous = getCurrent();
-  if(source_view != previous)
-  {
-    NodeController* new_current = copy(source_view);
+  // NodeController* previous = getCurrent();
+  // if(source_view != previous)
+  // {
+  //   NodeController* new_current = copy(source_view);
 
-    setCurrent(new_current, false);
-    Q_EMIT configChanged();
-  }
+  //   setCurrent(new_current, false);
+  //   Q_EMIT configChanged();
+  // }
 }
 
 void NodeManager::onCurrentDestroyed(QObject* obj)
 {
-  if(obj == current_)
-  {
-    current_ = NULL;
-  }
+  // if(obj == current_)
+  // {
+  //   current_ = NULL;
+  // }
 }
 
 void NodeManager::setCurrent(NodeController* new_current, bool mimic_view)
 {
-  NodeController* previous = getCurrent();
-  if(previous)
-  {
-    if(mimic_view)
-    {
-      new_current->mimic(previous);
-    }
-    else
-    {
-      new_current->transitionFrom(previous);
-    }
-    disconnect(previous, SIGNAL(destroyed(QObject*)), this, SLOT(onCurrentDestroyed(QObject*)));
-  }
-  new_current->setName("Current View");
-  connect(new_current, SIGNAL(destroyed(QObject*)), this, SLOT(onCurrentDestroyed(QObject*)));
-  current_ = new_current;
-  root_property_->addChildToFront(new_current);
-  delete previous;
+  // NodeController* previous = getCurrent();
+  // if(previous)
+  // {
+  //   if(mimic_view)
+  //   {
 
-  if(render_panel_)
-  {
-    // This setNodeController() can indirectly call
-    // NodeManager::update(), so make sure getCurrent() will return the
-    // new one by this point.
-    // render_panel_->setViewController(new_current);
-  }
-  Q_EMIT currentChanged();
+  //   }
+  //   else
+  //   {
+
+  //   }
+  //   disconnect(previous, SIGNAL(destroyed(QObject*)), this, SLOT(onCurrentDestroyed(QObject*)));
+  // }
+  // new_current->setName("Current View");
+  // connect(new_current, SIGNAL(destroyed(QObject*)), this, SLOT(onCurrentDestroyed(QObject*)));
+  // current_ = new_current;
+  // root_property_->addChildToFront(new_current);
+  // delete previous;
+
+  // if(render_panel_)
+  // {
+  //   // This setNodeController() can indirectly call
+  //   // NodeManager::update(), so make sure getCurrent() will return the
+  //   // new one by this point.
+  //   // render_panel_->setViewController(new_current);
+  // }
+  // Q_EMIT currentChanged();
 }
 
 void NodeManager::setCurrentNodeControllerType(const QString& new_class_id)
 {
-  setCurrent(create(new_class_id), true);
+  // setCurrent(create(new_class_id), true);
 }
 
 void NodeManager::copyCurrentToList()
 {
-  NodeController* current = getCurrent();
-  if(current)
-  {
-    NodeController* new_copy = copy(current);
-    new_copy->setName(factory_->getClassName(new_copy->getClassId()));
-    root_property_->addChild(new_copy);
-  }
+  // NodeController* current = getCurrent();
+  // if(current)
+  // {
+  //   NodeController* new_copy = copy(current);
+  //   new_copy->setName(factory_->getClassName(new_copy->getClassId()));
+  //   root_property_->addChild(new_copy);
+  // }
 }
 
 NodeController* NodeManager::getViewAt(int index) const
 {
-  if(index < 0)
-  {
-    index = 0;
-  }
-  return qobject_cast<NodeController*>(root_property_->childAt(index + 1));
+  // if(index < 0)
+  // {
+  //   index = 0;
+  // }
+  // return qobject_cast<NodeController*>(root_property_->childAt(index + 1));
 }
 
 int NodeManager::getNumViews() const
 {
-  int count = root_property_->numChildren();
-  if(count <= 0)
-  {
-    return 0;
-  }
-  else
-  {
-    return count-1;
-  }
+  // int count = root_property_->numChildren();
+  // if(count <= 0)
+  // {
+  //   return 0;
+  // }
+  // else
+  // {
+  //   return count-1;
+  // }
 }
 
 void NodeManager::add(NodeController* view, int index)
@@ -189,77 +191,73 @@ void NodeManager::add(NodeController* view, int index)
 
 NodeController* NodeManager::take(NodeController* view)
 {
-  for(int i = 0; i < getNumViews(); i++)
-  {
-    if(getViewAt(i) == view)
-    {
-      return qobject_cast<NodeController*>(root_property_->takeChildAt(i + 1));
-    }
-  }
-  return NULL;
+  // for(int i = 0; i < getNumViews(); i++)
+  // {
+  //   if(getViewAt(i) == view)
+  //   {
+  //     return qobject_cast<NodeController*>(root_property_->takeChildAt(i + 1));
+  //   }
+  // }
+  // return NULL;
 }
 
 NodeController* NodeManager::takeAt(int index)
 {
-  if(index < 0)
-  {
-    return NULL;
-  }
-  return qobject_cast<NodeController*>(root_property_->takeChildAt(index + 1));
+  // if(index < 0)
+  // {
+  //   return NULL;
+  // }
+  // return qobject_cast<NodeController*>(root_property_->takeChildAt(index + 1));
 }
 
 void NodeManager::load(const rviz::Config& config)
 {
-  rviz::Config current_config = config.mapGetChild("Current");
-  QString class_id;
-  if(current_config.mapGetString("Class", &class_id))
-  {
-    NodeController* new_current = create(class_id);
-    new_current->load(current_config);
-    setCurrent(new_current, false);
-  }
+  // rviz::Config current_config = config.mapGetChild("Current");
+  // QString class_id;
+  // if(current_config.mapGetString("Class", &class_id))
+  // {
+  //   NodeController* new_current = create(class_id);
+  //   new_current->load(current_config);
+  //   setCurrent(new_current, false);
+  // }
 
-  rviz::Config saved_views_config = config.mapGetChild("Saved");
-  root_property_->removeChildren(1);
-  int num_saved = saved_views_config.listLength();
-  for(int i = 0; i < num_saved; i++)
-  {
-    rviz::Config view_config = saved_views_config.listChildAt(i);
+  // rviz::Config saved_views_config = config.mapGetChild("Saved");
+  // root_property_->removeChildren(1);
+  // int num_saved = saved_views_config.listLength();
+  // for(int i = 0; i < num_saved; i++)
+  // {
+  //   rviz::Config view_config = saved_views_config.listChildAt(i);
     
-    if(view_config.mapGetString("Class", &class_id))
-    {
-      NodeController* view = create(class_id);
-      view->load(view_config);
-      add(view);
-    }
-  }
+  //   if(view_config.mapGetString("Class", &class_id))
+  //   {
+  //     NodeController* view = create(class_id);
+  //     view->load(view_config);
+  //     add(view);
+  //   }
+  // }
 }
 
 void NodeManager::save(rviz::Config config) const
 {
-  getCurrent()->save(config.mapMakeChild("Current"));
+  // getCurrent()->save(config.mapMakeChild("Current"));
 
-  rviz::Config saved_views_config = config.mapMakeChild("Saved");
-  for(int i = 0; i < getNumViews(); i++)
-  {
-    getViewAt(i)->save(saved_views_config.listAppendNew());
-  }
+  // rviz::Config saved_views_config = config.mapMakeChild("Saved");
+  // for(int i = 0; i < getNumViews(); i++)
+  // {
+  //   getViewAt(i)->save(saved_views_config.listAppendNew());
+  // }
 }
 
 NodeController* NodeManager::copy(NodeController* source)
 {
-  rviz::Config config;
-  source->save(config);
+  // rviz::Config config;
+  // source->save(config);
 
-  NodeController* copy_of_source = create(source->getClassId());
-  copy_of_source->load(config);
+  // NodeController* copy_of_source = create(source->getClassId());
+  // copy_of_source->load(config);
 
-  return copy_of_source;
-}
-
-void NodeManager::setRenderPanel(rviz::RenderPanel* render_panel)
-{
-  render_panel_ = render_panel;
+  // return copy_of_source;
+  return NULL;
 }
 
 Qt::ItemFlags NodeControllerContainer::getViewFlags(int column) const
