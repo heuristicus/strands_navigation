@@ -39,6 +39,7 @@ set(SRC_FILES
   src/node_controller.cpp
   src/node_manager.cpp
   src/edge_property.cpp
+  src/pose_property.cpp
   src/edge_controller.cpp
 )
 
