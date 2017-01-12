@@ -5,6 +5,8 @@ namespace rviz_topmap
 {
 NodeController::NodeController()
 {
+  ros::NodeHandle nh_;
+  top_sub_ = nh_.subscribe("/topological_map", 1, &NodeController::topmapCallback, this);
 }
 
 void NodeController::initialize()
@@ -20,6 +22,13 @@ void NodeController::initialize()
 
 NodeController::~NodeController()
 {
+}
+
+void NodeController::topmapCallback(const strands_navigation_msgs::TopologicalMap::ConstPtr& msg){
+  for (int i = 0; i < msg->nodes.size(); i++) {
+    ROS_INFO("---------- ADDING NODE %s ----------", msg->nodes[i].name.c_str());
+    nodes_.push_back(new NodeProperty("Node", msg->nodes[i], "", this));
+  }
 }
 
 QString NodeController::formatClassId(const QString& class_id)

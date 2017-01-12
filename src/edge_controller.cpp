@@ -29,6 +29,22 @@ EdgeController::~EdgeController()
   
 }
 
+QString EdgeController::formatClassId(const QString& class_id)
+{
+  QStringList id_parts = class_id.split("/");
+  if(id_parts.size() != 2)
+  {
+    // Should never happen with pluginlib class ids, which are
+    // formatted like "package_name/class_name".  Not worth crashing
+    // over though.
+    return class_id;
+  }
+  else
+  {
+    return id_parts[ 1 ] + " (" + id_parts[ 0 ] + ")";
+  }
+}
+
 bool EdgeController::addEdge(const strands_navigation_msgs::Edge& edge){
   edges_.push_back(new EdgeProperty("Edge", edge, "", this));
 }

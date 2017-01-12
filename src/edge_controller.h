@@ -47,9 +47,21 @@ public:
   /** @brief Subclasses should call this whenever a change is made which would change the results of toString(). */
   void emitConfigChanged();
 
+  // required by something that initialises this class
+  QString formatClassId(const QString& class_id);
+
+  /** @brief Return the class identifier which was used to create this
+   * instance.  This version just returns whatever was set with
+   * setClassId(). */
+  virtual QString getClassId() const { return class_id_; }
+
+  /** @brief Set the class identifier used to create this instance.
+   * Typically this will be set by the factory object which created it. */
+  virtual void setClassId( const QString& class_id ) { class_id_ = class_id; }
+
   virtual void load(const rviz::Config& config);
   virtual void save(rviz::Config config) const;
-
+  bool addEdge(const strands_navigation_msgs::Edge& edge);
 Q_SIGNALS:
   void configChanged();
 
@@ -58,20 +70,9 @@ protected:
    * EdgeController::initialize after context_ and camera_ are set.
    * Default implementation does nothing. */
   virtual void onInitialize() {}
-
-  /** @brief called by activate().
-   *
-   * Override to implement view-specific activation.  This base
-   * implementation does nothing. */
-  virtual void onActivate() {}
-
-  std::vector<EdgeProperty*> edges_;
-
-  bool addEdge(const strands_navigation_msgs::Edge& edge);
-  void setStatus(const QString & message);
-
 private:
   QString class_id_;
+  std::vector<EdgeProperty*> edges_;
 };
 
 } // end namespace rviz_topmap

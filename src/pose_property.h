@@ -15,9 +15,9 @@ class PoseProperty: public rviz::Property
 Q_OBJECT
 public:
  PoseProperty(const QString& name = QString(),
-	      geometry_msgs::Pose* default_value = new geometry_msgs::Pose(),
+	      const geometry_msgs::Pose& default_value = geometry_msgs::Pose(),
 	      const QString& description = QString(),
-	      Property* parent = 0,
+	      rviz::Property* parent = 0,
 	      const char *changed_slot = 0,
 	      QObject* receiver = 0);
 
@@ -27,7 +27,7 @@ public Q_SLOTS:
   void positionUpdated();
 
 private:
-  geometry_msgs::Pose* pose_;
+  const geometry_msgs::Pose& pose_;
   rviz::StringProperty* orientation_;
   rviz::FloatProperty* orientation_w_;
   rviz::FloatProperty* orientation_x_;

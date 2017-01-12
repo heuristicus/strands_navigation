@@ -1,6 +1,7 @@
 #ifndef NODE_PROPERTY_H
 #define NODE_PROPERTY_H
 
+#include "ros/ros.h"
 #include "rviz/properties/property.h"
 #include "rviz/properties/string_property.h"
 #include "rviz/properties/float_property.h"
@@ -17,7 +18,7 @@ class NodeProperty: public rviz::Property
 Q_OBJECT
 public:
   NodeProperty(const QString& name = QString(),
-               strands_navigation_msgs::TopologicalNode* default_value = new strands_navigation_msgs::TopologicalNode(),
+               const strands_navigation_msgs::TopologicalNode& default_value = strands_navigation_msgs::TopologicalNode(),
                const QString& description = QString(),
                Property* parent = 0,
                const char *changed_slot = 0,
@@ -25,9 +26,11 @@ public:
 
   virtual ~NodeProperty();
 public Q_SLOTS:
-  void topVelChanged();
+  void updateYawThreshold();
+  void updateXYThreshold();
+  void updateNodeName();
 private:
-  strands_navigation_msgs::TopologicalNode* node_;
+  const strands_navigation_msgs::TopologicalNode& node_;
   rviz::StringProperty* node_name_;
   rviz::StringProperty* map_;
   rviz::StringProperty* pointset_;

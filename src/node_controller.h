@@ -8,6 +8,8 @@
 #include <QFont>
 #include <QKeyEvent>
 
+#include "ros/ros.h"
+
 #include "rviz/config.h"
 #include "rviz/display_context.h"
 #include "rviz/frame_manager.h"
@@ -22,11 +24,9 @@
 #include "rviz/viewport_mouse_event.h"
 #include "rviz/window_manager_interface.h"
 
-#include "strands_navigation_msgs/Edge.h"
-#include "geometry_msgs/Pose.h"
+#include "strands_navigation_msgs/TopologicalMap.h"
 
-#include "pose_property.h"
-#include "edge_controller.h"
+#include "node_property.h"
 
 class QKeyEvent;
 
@@ -76,7 +76,11 @@ protected:
    * Default implementation does nothing. */
   virtual void onInitialize() {}
 private:
+  void topmapCallback(const strands_navigation_msgs::TopologicalMap::ConstPtr& msg);
+
   QString class_id_;
+  std::vector<NodeProperty*> nodes_;
+  ros::Subscriber top_sub_;
 };
 
 } // end namespace rviz_topmap
