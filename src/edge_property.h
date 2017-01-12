@@ -5,7 +5,6 @@
 #include "rviz/properties/string_property.h"
 #include "rviz/properties/float_property.h"
 #include "strands_navigation_msgs/Edge.h"
-#include "std_msgs/String.h"
 
 namespace rviz_topmap
 {
@@ -16,7 +15,7 @@ class EdgeProperty: public rviz::Property
 Q_OBJECT
 public:
   EdgeProperty(const QString& name = QString(),
-               strands_navigation_msgs::Edge* default_value = new strands_navigation_msgs::Edge(),
+               const strands_navigation_msgs::Edge& default_value = strands_navigation_msgs::Edge(),
                const QString& description = QString(),
                Property* parent = 0,
                const char *changed_slot = 0,
@@ -26,7 +25,7 @@ public:
 public Q_SLOTS:
   void topVelChanged();
 private:
-  strands_navigation_msgs::Edge* edge_;
+  const strands_navigation_msgs::Edge& edge_;
   rviz::StringProperty* edge_id_;
   rviz::StringProperty* node_;
   rviz::StringProperty* action_;

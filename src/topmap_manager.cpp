@@ -27,11 +27,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "node_manager.h"
+#include "topmap_manager.h"
 
 namespace rviz_topmap
 {
-NodeManager::NodeManager(rviz::DisplayContext* context)
+TopmapManager::TopmapManager(rviz::DisplayContext* context)
   : context_(context)
   , root_property_(new NodeController)
   , property_model_(new rviz::PropertyTreeModel(root_property_))
@@ -45,26 +45,21 @@ NodeManager::NodeManager(rviz::DisplayContext* context)
   // add(new NodeController, -1);
 }
 
-NodeManager::~NodeManager()
+TopmapManager::~TopmapManager()
 {
   delete property_model_;
   delete factory_;
 }
 
-void NodeManager::initialize()
+void TopmapManager::initialize()
 {
-  setCurrent(create("rviz/Orbit"), false);
 }
 
-void NodeManager::update(float wall_dt, float ros_dt)
+void TopmapManager::update(float wall_dt, float ros_dt)
 {
-  if(getCurrent())
-  {
-    getCurrent()->update(wall_dt, ros_dt);
-  }
 }
 
-NodeController* NodeManager::create(const QString& class_id)
+NodeController* TopmapManager::create(const QString& class_id)
 {
   // QString error;
   // NodeController* view = factory_->make(class_id, &error);
@@ -77,12 +72,12 @@ NodeController* NodeManager::create(const QString& class_id)
   // return view;
 }
 
-NodeController* NodeManager::getCurrent() const
+NodeController* TopmapManager::getCurrent() const
 {
   return current_;
 }
 
-void NodeManager::setCurrentFrom(NodeController* source_view)
+void TopmapManager::setCurrentFrom(NodeController* source_view)
 {
   // if(source_view == NULL)
   // {
@@ -99,7 +94,7 @@ void NodeManager::setCurrentFrom(NodeController* source_view)
   // }
 }
 
-void NodeManager::onCurrentDestroyed(QObject* obj)
+void TopmapManager::onCurrentDestroyed(QObject* obj)
 {
   // if(obj == current_)
   // {
@@ -107,7 +102,7 @@ void NodeManager::onCurrentDestroyed(QObject* obj)
   // }
 }
 
-void NodeManager::setCurrent(NodeController* new_current, bool mimic_view)
+void TopmapManager::setCurrent(NodeController* new_current, bool mimic_view)
 {
   // NodeController* previous = getCurrent();
   // if(previous)
@@ -131,19 +126,19 @@ void NodeManager::setCurrent(NodeController* new_current, bool mimic_view)
   // if(render_panel_)
   // {
   //   // This setNodeController() can indirectly call
-  //   // NodeManager::update(), so make sure getCurrent() will return the
+  //   // TopmapManager::update(), so make sure getCurrent() will return the
   //   // new one by this point.
   //   // render_panel_->setViewController(new_current);
   // }
   // Q_EMIT currentChanged();
 }
 
-void NodeManager::setCurrentNodeControllerType(const QString& new_class_id)
+void TopmapManager::setCurrentNodeControllerType(const QString& new_class_id)
 {
   // setCurrent(create(new_class_id), true);
 }
 
-void NodeManager::copyCurrentToList()
+void TopmapManager::copyCurrentToList()
 {
   // NodeController* current = getCurrent();
   // if(current)
@@ -154,7 +149,7 @@ void NodeManager::copyCurrentToList()
   // }
 }
 
-NodeController* NodeManager::getViewAt(int index) const
+NodeController* TopmapManager::getViewAt(int index) const
 {
   // if(index < 0)
   // {
@@ -163,7 +158,7 @@ NodeController* NodeManager::getViewAt(int index) const
   // return qobject_cast<NodeController*>(root_property_->childAt(index + 1));
 }
 
-int NodeManager::getNumViews() const
+int TopmapManager::getNumViews() const
 {
   // int count = root_property_->numChildren();
   // if(count <= 0)
@@ -176,20 +171,20 @@ int NodeManager::getNumViews() const
   // }
 }
 
-void NodeManager::add(NodeController* view, int index)
-{
-  if(index < 0)
-  {
-    index = root_property_->numChildren();
-  }
-  else
-  {
-    index++;
-  }
-  property_model_->getRoot()->addChild(view, index);
-}
+// void TopmapManager::add(NodeController* view, int index)
+// {
+//   // if(index < 0)
+//   // {
+//   //   index = root_property_->numChildren();
+//   // }
+//   // else
+//   // {
+//   //   index++;
+//   // }
+//   // property_model_->getRoot()->addChild(view, index);
+// }
 
-NodeController* NodeManager::take(NodeController* view)
+NodeController* TopmapManager::take(NodeController* view)
 {
   // for(int i = 0; i < getNumViews(); i++)
   // {
@@ -201,7 +196,7 @@ NodeController* NodeManager::take(NodeController* view)
   // return NULL;
 }
 
-NodeController* NodeManager::takeAt(int index)
+NodeController* TopmapManager::takeAt(int index)
 {
   // if(index < 0)
   // {
@@ -210,7 +205,7 @@ NodeController* NodeManager::takeAt(int index)
   // return qobject_cast<NodeController*>(root_property_->takeChildAt(index + 1));
 }
 
-void NodeManager::load(const rviz::Config& config)
+void TopmapManager::load(const rviz::Config& config)
 {
   // rviz::Config current_config = config.mapGetChild("Current");
   // QString class_id;
@@ -237,7 +232,7 @@ void NodeManager::load(const rviz::Config& config)
   // }
 }
 
-void NodeManager::save(rviz::Config config) const
+void TopmapManager::save(rviz::Config config) const
 {
   // getCurrent()->save(config.mapMakeChild("Current"));
 
@@ -248,7 +243,7 @@ void NodeManager::save(rviz::Config config) const
   // }
 }
 
-NodeController* NodeManager::copy(NodeController* source)
+NodeController* TopmapManager::copy(NodeController* source)
 {
   // rviz::Config config;
   // source->save(config);
@@ -260,23 +255,4 @@ NodeController* NodeManager::copy(NodeController* source)
   return NULL;
 }
 
-Qt::ItemFlags NodeControllerContainer::getViewFlags(int column) const
-{
-  return Property::getViewFlags(column) | Qt::ItemIsDropEnabled;
 }
-
-void NodeControllerContainer::addChild(rviz::Property* child, int index)
-{
-  if(index == 0)
-  {
-    index = 1;
-  }
-  rviz::Property::addChild(child, index);
-}
-
-void NodeControllerContainer::addChildToFront(rviz::Property* child)
-{
-  rviz::Property::addChild(child, 0);
-}
-
-} // end namespace rviz_topmap

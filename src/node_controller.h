@@ -50,6 +50,18 @@ public:
   virtual void load(const rviz::Config& config);
   virtual void save(rviz::Config config) const;
 
+  // required by something that initialises this class
+  QString formatClassId(const QString& class_id);
+
+  /** @brief Return the class identifier which was used to create this
+   * instance.  This version just returns whatever was set with
+   * setClassId(). */
+  virtual QString getClassId() const { return class_id_; }
+
+  /** @brief Set the class identifier used to create this instance.
+   * Typically this will be set by the factory object which created it. */
+  virtual void setClassId( const QString& class_id ) { class_id_ = class_id; }
+
 Q_SIGNALS:
   void configChanged();
 
@@ -63,14 +75,8 @@ protected:
    * NodeController::initialize after context_ and camera_ are set.
    * Default implementation does nothing. */
   virtual void onInitialize() {}
-
-  rviz::StringProperty* node_name_;
-  rviz::StringProperty* map_;
-  rviz::StringProperty* pointset_;
-  rviz::FloatProperty* yaw_tolerance_;
-  rviz::FloatProperty* xy_tolerance_;
-  PoseProperty* pose_;
-  EdgeProperty* edge_;
+private:
+  QString class_id_;
 };
 
 } // end namespace rviz_topmap

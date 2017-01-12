@@ -31,12 +31,6 @@
 
 #include <rviz/tool.h>
 
-namespace Ogre
-{
-class SceneNode;
-class Vector3;
-}
-
 namespace rviz
 {
 class VectorProperty;

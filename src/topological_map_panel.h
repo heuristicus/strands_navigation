@@ -31,7 +31,7 @@
 #define TOPMAP_PANEL_H
 
 #include "rviz/panel.h"
-#include "node_manager.h"
+#include "topmap_manager.h"
 #include "ros/ros.h"
 
 #include "rviz/properties/property_tree_widget.h"
@@ -52,20 +52,20 @@ public:
   TopologicalMapPanel(QWidget* parent = 0);
   virtual ~TopologicalMapPanel() {}
 
-  /** @brief Overridden from TopologicalMapPanel.  Just calls setMan() with vis_manager_->getNodeManager(). */
+  /** @brief Overridden from TopologicalMapPanel.  Just calls setMan() with vis_manager_->getTopmapManager(). */
   virtual void onInitialize();
 
-  /** @brief Set the NodeManager which this panel should display and edit.
+  /** @brief Set the TopmapManager which this panel should display and edit.
    *
-   * If this TopologicalMapPanel is to be used with a NodeManager other than
-   * the one in the NodeManager sent in through
+   * If this TopologicalMapPanel is to be used with a TopmapManager other than
+   * the one in the TopmapManager sent in through
    * TopologicalMapPanel::initialize(), either TopologicalMapPanelel::initialize() must not be
-   * called or setNodeManager() must be called after
+   * called or setTopmapManager() must be called after
    * TopologicalMapPanel::initialize(). */
-  void setNodeManager(NodeManager* node_man);
+  void setTopmapManager(TopmapManager* node_man);
 
-  /** @brief Returns the current NodeManager. */
-  NodeManager* getNodeManager() const { return node_man_; }
+  /** @brief Returns the current TopmapManager. */
+  TopmapManager* getTopmapManager() const { return node_man_; }
 
   /** @brief Load configuration data, specifically the PropertyTreeWidget view settings. */
   virtual void load(const rviz::Config& config);
@@ -79,7 +79,7 @@ private Q_SLOTS:
   void addNew();
   void onCurrentChanged();
 private:
-  NodeManager* node_man_;
+  TopmapManager* node_man_;
   rviz::PropertyTreeWidget* properties_view_;
 };
 

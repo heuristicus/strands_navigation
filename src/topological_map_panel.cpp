@@ -71,10 +71,10 @@ TopologicalMapPanel::TopologicalMapPanel(QWidget* parent)
 void TopologicalMapPanel::onInitialize()
 {
   ROS_INFO("Topmapmanel::OnInitialise");
-  setNodeManager(new NodeManager(NULL));
+  setTopmapManager(new TopmapManager(NULL));
 }
 
-void TopologicalMapPanel::setNodeManager(NodeManager* node_man)
+void TopologicalMapPanel::setTopmapManager(TopmapManager* node_man)
 {
   ROS_INFO("Setting model");
   properties_view_->setModel(node_man->getPropertyModel());
