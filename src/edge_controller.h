@@ -35,9 +35,9 @@ class EdgeController: public rviz::Property
 Q_OBJECT
 public:
   EdgeController(const QString& name = QString(),
-		 const QString& default_value = "",
+		 const std::vector<strands_navigation_msgs::Edge>& default_values = std::vector<strands_navigation_msgs::Edge>(),
 		 const QString& description = QString(),
-		 Property* parent = 0,
+		 rviz::Property* parent = 0,
 		 const char *changed_slot = 0,
 		 QObject* receiver = 0);
   virtual ~EdgeController();

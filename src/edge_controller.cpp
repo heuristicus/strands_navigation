@@ -4,16 +4,21 @@
 namespace rviz_topmap
 {
 EdgeController::EdgeController(const QString& name,
-			       const QString& default_value,
+			       const std::vector<strands_navigation_msgs::Edge>& default_values,
 			       const QString& description,
-			       Property* parent,
+			       rviz::Property* parent,
 			       const char *changed_slot,
 			       QObject* receiver)
+  : rviz::Property(name, "", description, parent, changed_slot, receiver)
 {
   edges_ = std::vector<EdgeProperty*>();
+  for (int i = 0; i < default_values.size(); i++) {
+    // ROS_INFO("ADDING EDGE %s", default_values[i].edge_id.c_str());
+    edges_.push_back(new EdgeProperty("Edge", default_values[i], "", this));
+  }
 }
 
-  void EdgeController::initialize()
+void EdgeController::initialize()
 {
 
   std::stringstream ss;
@@ -43,10 +48,6 @@ QString EdgeController::formatClassId(const QString& class_id)
   {
     return id_parts[ 1 ] + " (" + id_parts[ 0 ] + ")";
   }
-}
-
-bool EdgeController::addEdge(const strands_navigation_msgs::Edge& edge){
-  edges_.push_back(new EdgeProperty("Edge", edge, "", this));
 }
 
 void EdgeController::emitConfigChanged()

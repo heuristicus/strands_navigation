@@ -26,7 +26,7 @@ NodeController::~NodeController()
 
 void NodeController::topmapCallback(const strands_navigation_msgs::TopologicalMap::ConstPtr& msg){
   for (int i = 0; i < msg->nodes.size(); i++) {
-    ROS_INFO("---------- ADDING NODE %s ----------", msg->nodes[i].name.c_str());
+    // ROS_INFO("---------- ADDING NODE %s ----------", msg->nodes[i].name.c_str());
     nodes_.push_back(new NodeProperty("Node", msg->nodes[i], "", this));
   }
 }
