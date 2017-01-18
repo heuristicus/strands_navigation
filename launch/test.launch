@@ -1,0 +1,6 @@
+<launch>
+  <node name="topmap_interface" pkg="rviz_topmap" type="python_topmap_interface.py" output="screen">
+    <param name="map_name" value="tsc_1611"/>
+  </node>
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find rviz_topmap)/conf/rviz_topmap.rviz" output="screen"/>
+</launch>

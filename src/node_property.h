@@ -6,6 +6,8 @@
 #include "rviz/properties/string_property.h"
 #include "rviz/properties/float_property.h"
 #include "strands_navigation_msgs/TopologicalNode.h"
+#include "rviz_topmap/UpdateNodeName.h"
+#include "rviz_topmap/UpdateNodeTolerance.h"
 #include "pose_property.h"
 #include "edge_controller.h"
 
@@ -26,11 +28,15 @@ public:
 
   virtual ~NodeProperty();
 public Q_SLOTS:
-  void updateYawThreshold();
-  void updateXYThreshold();
+  void updateYawTolerance();
+  void updateXYTolerance();
   void updateNodeName();
 private:
   const strands_navigation_msgs::TopologicalNode& node_;
+  
+  ros::ServiceClient nameUpdate_;
+  ros::ServiceClient toleranceUpdate_;
+
   rviz::StringProperty* node_name_;
   rviz::StringProperty* map_;
   rviz::StringProperty* pointset_;

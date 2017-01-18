@@ -5,7 +5,19 @@
 ## First start with some standard catkin stuff.
 cmake_minimum_required(VERSION 2.8.3)
 project(rviz_topmap)
-find_package(catkin REQUIRED COMPONENTS rviz roscpp strands_navigation_msgs geometry_msgs std_msgs)
+find_package(catkin REQUIRED COMPONENTS message_generation rviz roscpp strands_navigation_msgs geometry_msgs std_msgs)
+
+add_service_files(
+  FILES
+  UpdateNodeTolerance.srv
+  UpdateNodeName.srv
+)
+
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+)
+
 catkin_package()
 include_directories(${catkin_INCLUDE_DIRS})
 link_directories(${catkin_LIBRARY_DIRS})
@@ -30,6 +42,7 @@ endif()
 ## I prefer the Qt signals and slots to avoid defining "emit", "slots",
 ## etc because they can conflict with boost signals, so define QT_NO_KEYWORDS here.
 add_definitions(-DQT_NO_KEYWORDS)
+
 
 ## Here we specify the list of source files.
 ## The generated MOC files are included automatically as headers.
