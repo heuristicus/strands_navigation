@@ -36,6 +36,10 @@ private:
   rviz::StringProperty* pointset_;
   rviz::FloatProperty* yaw_tolerance_;
   rviz::FloatProperty* xy_tolerance_;
+  // Store the name so that we can refer to it to change the node name in the
+  // map - once it changes in the property we won't know its previous value
+  // otherwise.
+  std::string name_;
   PoseProperty* pose_;
   EdgeController* edge_controller_;
 };

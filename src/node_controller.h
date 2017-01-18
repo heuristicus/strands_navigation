@@ -65,11 +65,6 @@ public:
 Q_SIGNALS:
   void configChanged();
 
-private Q_SLOTS:
-  void updateYawThreshold();
-  void updateXYThreshold();
-  void updateNodeName();
-
 protected:
   /** @brief Do subclass-specific initialization.  Called by
    * NodeController::initialize after context_ and camera_ are set.

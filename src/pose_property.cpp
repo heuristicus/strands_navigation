@@ -32,6 +32,7 @@ PoseProperty::PoseProperty(const QString& name,
   position_x_ = new rviz::FloatProperty("x", pose_.position.x, "",  position_, SLOT(positionUpdated()), this);
   position_y_ = new rviz::FloatProperty("y", pose_.position.y, "",  position_, SLOT(positionUpdated()), this);
   position_z_ = new rviz::FloatProperty("z", pose_.position.z, "",  position_);
+
   // Don't allow modification of z position of the node
   position_->setReadOnly(true);
   position_z_->setReadOnly(true);

@@ -67,8 +67,4 @@ void NodeController::save(rviz::Config config) const
   // rviz::Property::save(config);
 }
 
-void NodeController::updateNodeName(){}
-void NodeController::updateYawThreshold(){}
-void NodeController::updateXYThreshold(){}
-
 } // end namespace rviz_topmap

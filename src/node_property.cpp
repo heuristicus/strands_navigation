@@ -9,13 +9,15 @@ NodeProperty::NodeProperty(const QString& name,
 			   Property* parent,
 			   const char *changed_slot,
 			   QObject* receiver)
-  : rviz::Property(name, default_value.name.c_str(), description, parent, changed_slot, receiver)
+  : rviz::Property(name, default_value.name.c_str(), description, parent, changed_slot, this)
   , node_(default_value)
+  , name_(default_value.name)
 {
-  setReadOnly(true);
-  // node_name_ = new rviz::StringProperty("Node", node_.name.c_str(), "",
-  // 					parent, SLOT(updateNodeName()), this);
-
+  // manually connect the signals instead of using the constructor to do it.
+  // Can't seem to get the connection to work if passing in the slot in the
+  // constructor.
+  
+  connect(this, SIGNAL(changed()), this, SLOT(updateNodeName()));
   map_ = new rviz::StringProperty("Map", node_.map.c_str(), "", this);
   map_->setReadOnly(true);
 
@@ -34,14 +36,23 @@ NodeProperty::NodeProperty(const QString& name,
 					  this, SLOT(updateXYThreshold()), this);
   pose_ = new PoseProperty("Pose", node_.pose, "", this);
   edge_controller_ = new EdgeController("Edges", node_.edges, "", this);
-  // for (int i = 0; i < node_.edges.size(); i++) {
-  //   // ROS_INFO("ADDING EDGE %s", node_.edges[i].edge_id.c_str());
-  //   edges_.push_back(new EdgeProperty("Edge", node_.edges[i], "", edges_prop_));
-  // }
 }
 
 NodeProperty::~NodeProperty()
 {
+}
+
+void NodeProperty::updateYawThreshold(){
+  ROS_INFO("Yaw updated %f", yaw_tolerance_->getFloat());
+}
+
+void NodeProperty::updateXYThreshold(){
+  ROS_INFO("XY updated %f", xy_tolerance_->getFloat());
+}
+
+void NodeProperty::updateNodeName(){
+  ROS_INFO("Node name updated %s", this->getValue().toString().toStdString().c_str());
+  name_ = this->getValue().toString().toStdString();
 }
 
 } // end namespace rviz_topmap
