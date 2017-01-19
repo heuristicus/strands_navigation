@@ -1,6 +1,23 @@
 <launch>
-  <node name="topmap_interface" pkg="rviz_topmap" type="python_topmap_interface.py" output="screen">
-    <param name="map_name" value="tsc_1611"/>
+  <arg name="topmap" default="tsc_1611"/>
+  <arg name="map" default="$(find tsc_bringup)/maps/tsc_1611/tsc_1611.yaml"/>
+  <arg name="topological_navigation_retries" default="3"/>
+
+  <node pkg="tf" type="static_transform_publisher" name="map_odom_bc" args="1 0 0 0 0 0 1 odom map 100" />
+
+  <node pkg="map_server" name="map_server" type="map_server" args="$(arg map)"/>
+
+  <node pkg="topological_navigation" name="topological_map_manager" type="map_manager.py" args="$(arg topmap)"/>
+
+  <node pkg="topological_navigation" name="topological_navigation" type="navigation.py" output="screen" respawn="true">
+    <param name="retries" type="int" value="$(arg topological_navigation_retries)"/>
   </node>
+
+  <node pkg="topological_navigation" name="visualise_map" type="visualise_map.py" args="$(arg topmap)" output="screen"/>
+
+  <node pkg="rviz_topmap" name="topmap_interface" type="python_topmap_interface.py" output="screen">
+    <param name="map_name" value="$(arg topmap)"/>
+  </node>
+
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find rviz_topmap)/conf/rviz_topmap.rviz" output="screen"/>
 </launch>
