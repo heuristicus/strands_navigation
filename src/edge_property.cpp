@@ -29,6 +29,12 @@ EdgeProperty::EdgeProperty(const QString& name,
 
 EdgeProperty::~EdgeProperty()
 {
+  delete edge_id_;
+  delete node_;
+  delete action_;
+  delete map_2d_;
+  delete top_vel_;
+  delete inflation_radius_;
 }
 
 } // end namespace rviz_topmap

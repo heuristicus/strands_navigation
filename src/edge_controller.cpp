@@ -31,7 +31,9 @@ void EdgeController::initialize()
 
 EdgeController::~EdgeController()
 {
-  
+  for (int i = 0; i < edges_.size(); i++) {
+    delete edges_[i];
+  }
 }
 
 QString EdgeController::formatClassId(const QString& class_id)

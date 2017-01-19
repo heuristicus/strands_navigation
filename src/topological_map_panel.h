@@ -62,10 +62,10 @@ public:
    * TopologicalMapPanel::initialize(), either TopologicalMapPanelel::initialize() must not be
    * called or setTopmapManager() must be called after
    * TopologicalMapPanel::initialize(). */
-  void setTopmapManager(TopmapManager* node_man);
+  void setTopmapManager(TopmapManager* topmap_man);
 
   /** @brief Returns the current TopmapManager. */
-  TopmapManager* getTopmapManager() const { return node_man_; }
+  TopmapManager* getTopmapManager() const { return topmap_man_; }
 
   /** @brief Load configuration data, specifically the PropertyTreeWidget view settings. */
   virtual void load(const rviz::Config& config);
@@ -79,7 +79,7 @@ private Q_SLOTS:
   void addNew();
   void onCurrentChanged();
 private:
-  TopmapManager* node_man_;
+  TopmapManager* topmap_man_;
   rviz::PropertyTreeWidget* properties_view_;
 };
 

@@ -11,11 +11,13 @@ add_service_files(
   FILES
   UpdateNodeTolerance.srv
   UpdateNodeName.srv
+  UpdateNodePose.srv
 )
 
 generate_messages(
   DEPENDENCIES
   std_msgs
+  geometry_msgs
 )
 
 catkin_package()

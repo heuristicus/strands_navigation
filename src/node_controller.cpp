@@ -22,9 +22,18 @@ void NodeController::initialize()
 
 NodeController::~NodeController()
 {
+  for (int i = 0; i < nodes_.size(); i++) {
+    delete nodes_[i];
+  }
 }
 
 void NodeController::topmapCallback(const strands_navigation_msgs::TopologicalMap::ConstPtr& msg){
+  ROS_INFO("Updating topological map properties");
+  // This is probably not very efficient. Have to destroy and reconstruct every
+  // time the map changes.
+  if (nodes_.size() != 0) {
+    removeChildren();
+  }
   for (int i = 0; i < msg->nodes.size(); i++) {
     // ROS_INFO("---------- ADDING NODE %s ----------", msg->nodes[i].name.c_str());
     nodes_.push_back(new NodeProperty("Node", msg->nodes[i], "", this));

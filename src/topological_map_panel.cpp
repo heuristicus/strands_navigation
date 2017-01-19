@@ -41,17 +41,15 @@ namespace rviz_topmap
 {
 TopologicalMapPanel::TopologicalMapPanel(QWidget* parent)
   : rviz::Panel(parent)
-  , node_man_(NULL)
+  , topmap_man_(NULL)
 {
   properties_view_ = new rviz::PropertyTreeWidget();
 
   QPushButton* add_button = new QPushButton("Add");
-  QPushButton* rename_button = new QPushButton("Rename");
   QPushButton* remove_button = new QPushButton("Remove");
 
   QHBoxLayout* button_layout = new QHBoxLayout;
   button_layout->addWidget(add_button);
-  button_layout->addWidget(rename_button);
   button_layout->addWidget(remove_button);
   button_layout->setContentsMargins(2, 0, 2, 2);
 
@@ -62,7 +60,6 @@ TopologicalMapPanel::TopologicalMapPanel(QWidget* parent)
   setLayout(main_layout);
 
   connect(add_button, SIGNAL(clicked()), this, SLOT(addNew()));
-  connect(rename_button, SIGNAL(clicked()), this, SLOT(renameSelected()));
   connect(remove_button, SIGNAL(clicked()), this, SLOT(onDeleteClicked()));
   // connect(properties_view_, SIGNAL(clicked(const QModelIndex&)), this, SLOT(setCurrentViewFromIndex(const QModelIndex&)));
   // connect(properties_view_, SIGNAL(activated(const QModelIndex&)), this, SLOT(setCurrentViewFromIndex(const QModelIndex&)));
@@ -74,14 +71,14 @@ void TopologicalMapPanel::onInitialize()
   setTopmapManager(new TopmapManager(NULL));
 }
 
-void TopologicalMapPanel::setTopmapManager(TopmapManager* node_man)
+void TopologicalMapPanel::setTopmapManager(TopmapManager* topmap_man)
 {
   ROS_INFO("Setting model");
-  properties_view_->setModel(node_man->getPropertyModel());
-  node_man_ = node_man;
+  properties_view_->setModel(topmap_man->getPropertyModel());
+  topmap_man_ = topmap_man;
 
   // connect(camera_type_selector_, SIGNAL(activated(int)), this, SLOT(onTypeSelectorChanged(int)));
-  // connect(node_man_, SIGNAL(currentChanged()), this, SLOT(onCurrentChanged()));
+  // connect(topmap_man_, SIGNAL(currentChanged()), this, SLOT(onCurrentChanged()));
   // onCurrentChanged();
 }
 
@@ -94,7 +91,7 @@ void TopologicalMapPanel::onDeleteClicked()
   //   // TODO: should eventually move to a scheme where the CURRENT view
   //   // is not in the same list as the saved views, at which point this
   //   // check can go away.
-  //   if(views_to_delete[ i ] != node_man_->getCurrent())
+  //   if(views_to_delete[ i ] != topmap_man_->getCurrent())
   //   {
   //     delete views_to_delete[ i ];
   //   }
@@ -116,7 +113,7 @@ void TopologicalMapPanel::renameSelected()
     // TODO: should eventually move to a scheme where the CURRENT view
     // is not in the same list as the saved views, at which point this
     // check can go away.
-    if(view == node_man_->getCurrent())
+    if(view == topmap_man_->getCurrent())
     {
       return;
     }
@@ -135,10 +132,10 @@ void TopologicalMapPanel::renameSelected()
 
 void TopologicalMapPanel::onCurrentChanged()
 {
-  //QString formatted_class_id = NodeController::formatClassId(node_man_->getCurrent()->getClassId());
+  //QString formatted_class_id = NodeController::formatClassId(topmap_man_->getCurrent()->getClassId());
   // ROS_INFO("CUrrent changed");
   // properties_view_->setAnimated(false);
-  // node_man_->getCurrent()->expand();
+  // topmap_man_->getCurrent()->expand();
   // properties_view_->setAnimated(true);
 }
 

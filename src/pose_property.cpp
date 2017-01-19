@@ -15,6 +15,10 @@ PoseProperty::PoseProperty(const QString& name,
     pose_(default_value)
 {
   setReadOnly(true); // can't change the name of this pose
+
+  ros::NodeHandle nh;
+  poseUpdate_ = nh.serviceClient<rviz_topmap::UpdateNodePose>("/topmap_interface/update_node_pose", true);
+
   orientation_ = new rviz::StringProperty("Orientation", "", "", this);
   orientation_w_ = new rviz::FloatProperty("w", pose_.orientation.w, "",  orientation_);
   orientation_x_ = new rviz::FloatProperty("x", pose_.orientation.x, "",  orientation_);
@@ -40,10 +44,35 @@ PoseProperty::PoseProperty(const QString& name,
 
 PoseProperty::~PoseProperty()
 {
+  delete orientation_w_;
+  delete orientation_x_;
+  delete orientation_y_;
+  delete orientation_z_;
+  delete orientation_;
+  delete position_x_;
+  delete position_y_;
+  delete position_z_;
+  delete position_;
 }
 
 void PoseProperty::positionUpdated()
 {
+  rviz_topmap::UpdateNodePose srv;
+  srv.request.node_name = getParent()->getValue().toString().toStdString().c_str();
+  srv.request.new_pose.position.x = position_x_->getFloat();
+  srv.request.new_pose.position.y = position_y_->getFloat();
+  srv.request.new_pose.position.z = position_z_->getFloat();
+  srv.request.new_pose.orientation.x = orientation_x_->getFloat();
+  srv.request.new_pose.orientation.y = orientation_y_->getFloat();
+  srv.request.new_pose.orientation.z = orientation_z_->getFloat();
+  srv.request.new_pose.orientation.w = orientation_w_->getFloat();
+  
+  if (poseUpdate_.call(srv)) {
+    ROS_INFO("Successfully updated pose for node %s", srv.request.node_name.c_str());
+  } else {
+    ROS_WARN("Failed to update pose for node %s", srv.request.node_name.c_str());
+  }
+
 }
 
 } // end namespace rviz_topmap

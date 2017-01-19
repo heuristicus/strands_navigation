@@ -1,0 +1,4 @@
+string node_name
+geometry_msgs/Pose new_pose
+---
+bool success

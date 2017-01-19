@@ -1,6 +1,8 @@
 #ifndef POSE_PROPERTY_H
 #define POSE_PROPERTY_H
 
+#include "ros/ros.h"
+#include "rviz_topmap/UpdateNodePose.h"
 #include "geometry_msgs/Pose.h"
 #include "rviz/properties/property.h"
 #include "rviz/properties/float_property.h"
@@ -38,6 +40,7 @@ private:
   rviz::FloatProperty* position_y_;
   rviz::FloatProperty* position_z_;
 
+  ros::ServiceClient poseUpdate_;
 };
 
 } // end namespace rviz_topmap

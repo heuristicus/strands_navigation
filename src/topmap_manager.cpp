@@ -49,6 +49,7 @@ TopmapManager::~TopmapManager()
 {
   delete property_model_;
   delete factory_;
+  delete root_property_;
 }
 
 void TopmapManager::initialize()

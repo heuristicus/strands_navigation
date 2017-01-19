@@ -44,6 +44,12 @@ NodeProperty::NodeProperty(const QString& name,
 
 NodeProperty::~NodeProperty()
 {
+  delete map_;
+  delete pointset_;
+  delete yaw_tolerance_;
+  delete xy_tolerance_;
+  delete pose_;
+  delete edge_controller_;
 }
 
 void NodeProperty::updateYawTolerance(){
