@@ -97,41 +97,33 @@ void TopmapManager::setCurrentFrom(NodeController* source_view)
 
 void TopmapManager::onCurrentDestroyed(QObject* obj)
 {
-  // if(obj == current_)
-  // {
-  //   current_ = NULL;
-  // }
+  if(obj == current_)
+  {
+    current_ = NULL;
+  }
 }
 
 void TopmapManager::setCurrent(NodeController* new_current, bool mimic_view)
 {
-  // NodeController* previous = getCurrent();
-  // if(previous)
-  // {
-  //   if(mimic_view)
-  //   {
-
-  //   }
-  //   else
-  //   {
-
-  //   }
-  //   disconnect(previous, SIGNAL(destroyed(QObject*)), this, SLOT(onCurrentDestroyed(QObject*)));
-  // }
-  // new_current->setName("Current View");
-  // connect(new_current, SIGNAL(destroyed(QObject*)), this, SLOT(onCurrentDestroyed(QObject*)));
-  // current_ = new_current;
+  NodeController* previous = getCurrent();
+  if(previous)
+  {
+    disconnect(previous, SIGNAL(destroyed(QObject*)), this, SLOT(onCurrentDestroyed(QObject*)));
+  }
+  new_current->setName("Current View");
+  connect(new_current, SIGNAL(destroyed(QObject*)), this, SLOT(onCurrentDestroyed(QObject*)));
+  current_ = new_current;
   // root_property_->addChildToFront(new_current);
-  // delete previous;
+  delete previous;
 
   // if(render_panel_)
   // {
-  //   // This setNodeController() can indirectly call
-  //   // TopmapManager::update(), so make sure getCurrent() will return the
-  //   // new one by this point.
-  //   // render_panel_->setViewController(new_current);
+  //   This setNodeController() can indirectly call
+  //   TopmapManager::update(), so make sure getCurrent() will return the
+  //   new one by this point.
+  //   render_panel_->setViewController(new_current);
   // }
-  // Q_EMIT currentChanged();
+  Q_EMIT currentChanged();
 }
 
 void TopmapManager::setCurrentNodeControllerType(const QString& new_class_id)

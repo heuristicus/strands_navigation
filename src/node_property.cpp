@@ -60,6 +60,7 @@ void NodeProperty::updateYawTolerance(){
   
   if (toleranceUpdate_.call(srv)) {
     ROS_INFO("Successfully updated tolerance for node %s to %f", name_.c_str(), srv.request.yaw_tolerance);
+    Q_EMIT nodeModified(this);
   } else {
     ROS_WARN("Failed to update yaw tolerance for node %s", name_.c_str());
   }
@@ -73,9 +74,11 @@ void NodeProperty::updateXYTolerance(){
   
   if (toleranceUpdate_.call(srv)) {
     ROS_INFO("Successfully updated tolerance for node %s to %f", name_.c_str(), srv.request.xy_tolerance);
+    Q_EMIT nodeModified(this);
   } else {
     ROS_WARN("Failed to update xy tolerance for node %s", name_.c_str());
   }
+
 }
 
 void NodeProperty::updateNodeName(){
@@ -85,6 +88,7 @@ void NodeProperty::updateNodeName(){
   
   if (nameUpdate_.call(srv)) {
     ROS_INFO("Successfully updated node name %s to %s", name_.c_str(), srv.request.new_name.c_str());
+    Q_EMIT nodeModified(this);
   } else {
     ROS_WARN("Failed to update name of node %s", name_.c_str());
   }

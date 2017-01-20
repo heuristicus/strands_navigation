@@ -23,5 +23,5 @@
     <param name="map_name" value="$(arg topmap)"/>
   </node>
 
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find rviz_topmap)/conf/rviz_topmap.rviz" output="screen"/>
+  <!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find rviz_topmap)/conf/rviz_topmap.rviz" output="screen"/> -->
 </launch>

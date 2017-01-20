@@ -65,17 +65,23 @@ public:
 Q_SIGNALS:
   void configChanged();
 
+private Q_SLOTS:
+  void updateModifiedNode(Property* node);
+
 protected:
   /** @brief Do subclass-specific initialization.  Called by
    * NodeController::initialize after context_ and camera_ are set.
    * Default implementation does nothing. */
   virtual void onInitialize() {}
+
+  void setModifiedChild(rviz::Property* modifiedChild){ modifiedChild_ = modifiedChild; }
+
 private:
   void topmapCallback(const strands_navigation_msgs::TopologicalMap::ConstPtr& msg);
 
   QString class_id_;
-  std::vector<NodeProperty*> nodes_;
   ros::Subscriber top_sub_;
+  rviz::Property* modifiedChild_;
 };
 
 } // end namespace rviz_topmap

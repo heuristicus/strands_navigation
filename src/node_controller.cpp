@@ -4,6 +4,8 @@
 namespace rviz_topmap
 {
 NodeController::NodeController()
+  : rviz::Property()
+  , modifiedChild_(NULL)
 {
   ros::NodeHandle nh_;
   top_sub_ = nh_.subscribe("/topological_map", 1, &NodeController::topmapCallback, this);
@@ -22,22 +24,41 @@ void NodeController::initialize()
 
 NodeController::~NodeController()
 {
-  for (int i = 0; i < nodes_.size(); i++) {
-    delete nodes_[i];
-  }
 }
 
 void NodeController::topmapCallback(const strands_navigation_msgs::TopologicalMap::ConstPtr& msg){
   ROS_INFO("Updating topological map properties");
-  // This is probably not very efficient. Have to destroy and reconstruct every
-  // time the map changes.
-  if (nodes_.size() != 0) {
-    removeChildren();
+
+  // If we're the ones who made the change, then we only replace the property
+  // for the specific node that we changed, otherwise replace everything.
+  if (modifiedChild_ == NULL) {
+    if (numChildren() != 0) {
+      // We don't know how many children have been modified, so reconstruct
+      // everything.
+      removeChildren();
+    }
+    for (int i = 0; i < msg->nodes.size(); i++) {
+      NodeProperty* newProp = new NodeProperty("Node", msg->nodes[i], "");
+      addChild(newProp);
+      connect(newProp, SIGNAL(nodeModified(Property*)), this, SLOT(updateModifiedNode(Property*)));
+    }
+  } else {
+    std::string nodeName = modifiedChild_->getValue().toString().toStdString();
+    // remove only the modified child from the child list
+    takeChild(modifiedChild_);
+
+    for (int i = 0; i < msg->nodes.size(); i++) {
+      if (std::string(msg->nodes[i].name).compare(nodeName)) {
+	NodeProperty* newProp = new NodeProperty("Node", msg->nodes[i], "");
+	addChild(newProp, i);
+      }
+    }
   }
-  for (int i = 0; i < msg->nodes.size(); i++) {
-    // ROS_INFO("---------- ADDING NODE %s ----------", msg->nodes[i].name.c_str());
-    nodes_.push_back(new NodeProperty("Node", msg->nodes[i], "", this));
-  }
+}
+
+void NodeController::updateModifiedNode(Property* node){
+  ROS_INFO("Child was modified, %s", node->getValue().toString().toStdString().c_str());
+  modifiedChild_ = node;
 }
 
 QString NodeController::formatClassId(const QString& class_id)
@@ -58,22 +79,22 @@ QString NodeController::formatClassId(const QString& class_id)
 
 void NodeController::load(const rviz::Config& config)
 {
-  // // Load the name by hand.
-  // QString name;
-  // if(config.mapGetString("Name", &name))
-  // {
-  //   setName(name);
-  // }
-  // // Load all sub-properties the same way the base class does.
-  // rviz::Property::load(config);
+  // Load the name by hand.
+  QString name;
+  if(config.mapGetString("Name", &name))
+  {
+    setName(name);
+  }
+  // Load all sub-properties the same way the base class does.
+  rviz::Property::load(config);
 }
 
 void NodeController::save(rviz::Config config) const
 {
-  // config.mapSetValue("Class", getClassId());
-  // config.mapSetValue("Name", getName());
+  config.mapSetValue("Class", getClassId());
+  config.mapSetValue("Name", getName());
 
-  // rviz::Property::save(config);
+  rviz::Property::save(config);
 }
 
 } // end namespace rviz_topmap
