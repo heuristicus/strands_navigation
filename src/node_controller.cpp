@@ -32,10 +32,7 @@ void NodeController::topmapCallback(const strands_navigation_msgs::TopologicalMa
   // for the specific node that we changed, otherwise replace everything.
   if (modifiedChild_ == NULL) {
     if (numChildren() != 0) {
-      // Remove all child properties of this controller. Need to do it this way
-      // rather than using removeChildren, because that doesn't seem to change
-      // the state of the children correctly.
-      for (int i = 0; i < numChildren(); i++) {
+      for (;numChildren() != 0;) {
 	delete takeChildAt(0);
       }
     }
@@ -48,19 +45,21 @@ void NodeController::topmapCallback(const strands_navigation_msgs::TopologicalMa
     std::string nodeName = modifiedChild_->getValue().toString().toStdString();
     // remove only the modified child from the child list
     delete takeChild(modifiedChild_);
+    modifiedChild_ = NULL;
     for (int i = 0; i < msg->nodes.size(); i++) {
       if (std::string(msg->nodes[i].name).compare(nodeName) == 0) {
 	// ROS_INFO("Adding node with name %s, which matches %s", msg->nodes[i].name.c_str(), nodeName.c_str());
 	NodeProperty* newProp = new NodeProperty("Node", msg->nodes[i], "");
 	addChild(newProp, i);
 	connect(newProp, SIGNAL(nodeModified(Property*)), this, SLOT(updateModifiedNode(Property*)));
+	break;
       }
     }
   }
 }
 
 void NodeController::updateModifiedNode(Property* node){
-  ROS_INFO("Child was modified, %s", node->getValue().toString().toStdString().c_str());
+  ROS_INFO("Child was modified: %s", node->getValue().toString().toStdString().c_str());
   modifiedChild_ = node;
 }
 
