@@ -91,6 +91,37 @@ class topological_map(object):
             rospy.logerr("Impossible to store in DB "+str(len(available))+" waypoints found after query")
             rospy.logerr("Available data: "+str(available))
 
+    def update_node_field(self, node_name, edit_field, field_value):
+        """Edit a property of the node.
+
+        edit_field: A string of the name of the field to edit. To change the
+        name you would send "name". See the TopologicalNode message.
+
+        field_value: The new value the field should take. Should be of the same
+        type as the existing one.
+
+        """
+        if edit_field not in TopologicalNode.__slots__:
+            rospy.logerr("You can't update the field {0}, because it doesn't exist in TopologicalNode.".format(edit_field))
+            return
+
+        msg_store = MessageStoreProxy(collection='topological_maps')
+        # The query retrieves the node name with the given name from the given pointset.
+        query = {"name": node_name, "pointset": self.name}
+        # The meta-information is some additional information about the specific
+        # map that we are interested in (?)
+        query_meta = {}
+        query_meta["pointset"] = self.name
+        query_meta["map"] = self.map
+        # This returns a tuple containing the object, if it exists, and some
+        # information about how it's stored in the database.
+        available = msg_store.query(TopologicalNode._type, query, query_meta)
+        if len(available) == 1:
+            setattr(available[0][0], edit_field, field_value)
+            msg_store.update(available[0][0], query_meta, query, upsert=True)
+        else:
+            rospy.logerr("Impossible to store in DB "+str(len(available))+" waypoints found after query")
+            rospy.logerr("Available data: "+str(available))
 
     def add_edge(self, or_waypoint, de_waypoint, action):
         #print 'removing edge: '+edge_name
