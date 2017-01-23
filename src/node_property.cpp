@@ -78,7 +78,6 @@ void NodeProperty::updateXYTolerance(){
   } else {
     ROS_WARN("Failed to update xy tolerance for node %s", name_.c_str());
   }
-
 }
 
 void NodeProperty::updateNodeName(){
@@ -93,6 +92,10 @@ void NodeProperty::updateNodeName(){
     ROS_WARN("Failed to update name of node %s", name_.c_str());
   }
   name_ = this->getValue().toString().toStdString();
+}
+
+void NodeProperty::nodePropertyUpdated(){
+  Q_EMIT nodeModified(this);
 }
 
 } // end namespace rviz_topmap

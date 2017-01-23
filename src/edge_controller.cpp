@@ -11,10 +11,13 @@ EdgeController::EdgeController(const QString& name,
 			       QObject* receiver)
   : rviz::Property(name, "", description, parent, changed_slot, receiver)
 {
+
   edges_ = std::vector<EdgeProperty*>();
   for (int i = 0; i < default_values.size(); i++) {
     // ROS_INFO("ADDING EDGE %s", default_values[i].edge_id.c_str());
-    edges_.push_back(new EdgeProperty("Edge", default_values[i], "", this));
+    EdgeProperty* newEdge = new EdgeProperty("Edge", default_values[i], "");
+    addChild(newEdge);
+    connect(newEdge, SIGNAL(edgeModified()), parent, SLOT(nodePropertyUpdated()));
   }
 }
 

@@ -24,6 +24,10 @@ public:
   virtual ~EdgeProperty();
 public Q_SLOTS:
   void topVelChanged();
+
+Q_SIGNALS:
+  void edgeModified();
+
 private:
   const strands_navigation_msgs::Edge& edge_;
   rviz::StringProperty* edge_id_;

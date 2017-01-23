@@ -31,13 +31,12 @@ public Q_SLOTS:
   void updateYawTolerance();
   void updateXYTolerance();
   void updateNodeName();
+  void nodePropertyUpdated();
 
 Q_SIGNALS:
 void nodeModified(Property* node);
 
 private:
-  void updateParentModified();
-
   const strands_navigation_msgs::TopologicalNode& node_;
   
   ros::ServiceClient nameUpdate_;

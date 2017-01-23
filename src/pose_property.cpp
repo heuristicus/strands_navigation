@@ -14,6 +14,7 @@ PoseProperty::PoseProperty(const QString& name,
   : rviz::Property(name, "", description, parent, changed_slot, receiver),
     pose_(default_value)
 {
+  connect(this, SIGNAL(poseModified()), parent, SLOT(nodePropertyUpdated()));
   setReadOnly(true); // can't change the name of this pose
 
   ros::NodeHandle nh;
@@ -69,10 +70,10 @@ void PoseProperty::positionUpdated()
   
   if (poseUpdate_.call(srv)) {
     ROS_INFO("Successfully updated pose for node %s", srv.request.node_name.c_str());
+    Q_EMIT poseModified();
   } else {
     ROS_WARN("Failed to update pose for node %s", srv.request.node_name.c_str());
   }
-
 }
 
 } // end namespace rviz_topmap

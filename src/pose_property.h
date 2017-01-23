@@ -28,6 +28,9 @@ public:
 public Q_SLOTS:
   void positionUpdated();
 
+Q_SIGNALS:
+  void poseModified();
+
 private:
   const geometry_msgs::Pose& pose_;
   rviz::StringProperty* orientation_;
