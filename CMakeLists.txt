@@ -14,6 +14,7 @@ add_service_files(
   UpdateNodePose.srv
   AddNode.srv
   DeleteNode.srv
+  AddEdge.srv
 )
 
 generate_messages(

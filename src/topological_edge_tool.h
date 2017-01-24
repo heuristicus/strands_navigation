@@ -26,10 +26,13 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef NODE_TOOL_H
-#define NODE_TOOL_H
+#ifndef EDGE_TOOL_H
+#define EDGE_TOOL_H
 
+#include <ros/ros.h>
 #include <rviz/tool.h>
+#include "geometry_msgs/Pose.h"
+#include "rviz_topmap/AddEdge.h"
 
 namespace rviz
 {
@@ -57,21 +60,12 @@ public:
   virtual void activate();
   virtual void deactivate();
 
-  virtual int processMouseEvent( rviz::ViewportMouseEvent& event );
-
-  virtual void load( const rviz::Config& config );
-  virtual void save( rviz::Config config ) const;
-
+  virtual int processMouseEvent(rviz::ViewportMouseEvent& event);
 private:
-  void makeFlag( const Ogre::Vector3& position );
-
-  std::vector<Ogre::SceneNode*> flag_nodes_;
-  Ogre::SceneNode* moving_flag_node_;
-  std::string flag_resource_;
-  rviz::VectorProperty* current_flag_property_;
+  ros::ServiceClient addEdgeSrv_;
+  bool noClick_; // true if nothing clicked yet
+  geometry_msgs::Pose firstClick_;
 };
-// END_TUTORIAL
-
 } // end namespace rviz_topmap
 
-#endif // NODE_TOOL_H
+#endif // EDGE_TOOL_H

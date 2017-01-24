@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 import rospy
+import math
+import operator
 from std_msgs.msg import Time
 from rviz_topmap.srv import *
 from topological_navigation.topological_map import topological_map as TopologicalMapUpdater
@@ -30,6 +32,7 @@ class TopmapInterface(object):
         self.update_pose_srv = rospy.Service("~update_node_pose", UpdateNodePose, self.update_node_pose)
         self.add_node_srv = rospy.Service("~add_node", AddNode, self.add_new_node)
         self.del_node_srv = rospy.Service("~delete_node", DeleteNode, self.delete_node)
+        self.add_edge_srv = rospy.Service("~add_edge", AddEdge, self.add_edge)
         self.map_update = rospy.Publisher('/update_map', Time)
         self.topmap_updater = TopologicalMapUpdater(self.name)
 
@@ -72,7 +75,6 @@ class TopmapInterface(object):
                 existing_node = True
 
         if not this_node:
-            print()
             return UpdateNodeNameResponse(False, "The requested node didn't exist...That's weird.")
 
         if existing_node:
@@ -86,6 +88,36 @@ class TopmapInterface(object):
         self.topmap_updater.update_node_waypoint(req.node_name, req.new_pose)
         self.map_update.publish(rospy.Time.now())
         return UpdateNodePoseResponse(True, "")
+
+    def add_edge(self, req):
+
+        def tuple_dist(pose_tuple):
+            return math.sqrt(pow(pose_tuple[0].position.x - pose_tuple[1].position.x, 2)
+                             + pow(pose_tuple[0].position.y - pose_tuple[1].position.y, 2))
+
+        # Find the nodes closest to the start and end point of the line given in the request
+        poses = [node.pose for node in self.topmap.nodes]
+
+        from_dists = map(tuple_dist, zip([req.first]*len(poses), poses))
+        to_dists = map(tuple_dist, zip([req.second]*len(poses), poses))
+        closest_from_ind, from_dist = min(enumerate(from_dists), key=operator.itemgetter(1))
+        closest_to_ind, to_dist = min(enumerate(to_dists), key=operator.itemgetter(1))
+
+        if req.max_distance > 0 and (from_dist > req.max_distance or to_dist > req.max_distance):
+            return AddEdgeResponse(True, "Click locations were not close enough to a node")
+
+        from_name = self.topmap.nodes[closest_from_ind].name
+        to_name = self.topmap.nodes[closest_to_ind].name
+
+        message = "Added edge from {0} to {1}".format(from_name, to_name)
+
+        self.topmap_updater.add_edge(from_name, to_name, "move_base")
+        if req.bidirectional:
+            self.topmap_updater.add_edge(to_name, from_name, "move_base")
+            message += " (bidirectional)"
+
+        self.map_update.publish(rospy.Time.now())
+        return AddEdgeResponse(True, message)
 
     def topmap_cb(self, msg):
         self.topmap = msg
