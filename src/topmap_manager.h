@@ -62,7 +62,9 @@ public:
 
   /** @brief Return the current NodeController in use for the main
    * RenderWindow. */
-  NodeController* getCurrent() const;
+  NodeController* getController() const;
+
+  NodeProperty* getCurrent() const;
 
   NodeController* create(const QString& type);
 
@@ -86,11 +88,11 @@ public:
   void save(rviz::Config config) const;
 
   /** @brief Make a copy of @a view_to_copy and install that as the new current NodeController. */
-  void setCurrentFrom(NodeController* view_to_copy);
+  void setCurrentFrom(NodeProperty* view_to_copy);
 
   /** @brief Return a copy of source, made by saving source to
    * a Config and instantiating and loading a new one from that. */
-  NodeController* copy(NodeController* source);
+  NodeProperty* copy(NodeProperty* source);
 
   rviz::PluginlibFactory<NodeController>* getFactory() const { return factory_; }
 
@@ -126,13 +128,13 @@ private:
    * This calls mimic() or transitionFrom() on the new controller,
    * deletes the previous controller (if one existed), and tells the
    * RenderPanel about the new controller. */
-  void setCurrent(NodeController* new_current, bool mimic_view);
+  void setCurrent(NodeProperty* new_current, bool mimic_view);
 
   rviz::DisplayContext* context_;
   NodeController* root_property_;
   rviz::PropertyTreeModel* property_model_;
   rviz::PluginlibFactory<NodeController>* factory_;
-  NodeController* current_;
+  NodeProperty* current_;
   rviz::RenderPanel* render_panel_;
 };
 

@@ -12,6 +12,8 @@ add_service_files(
   UpdateNodeTolerance.srv
   UpdateNodeName.srv
   UpdateNodePose.srv
+  AddNode.srv
+  DeleteNode.srv
 )
 
 generate_messages(

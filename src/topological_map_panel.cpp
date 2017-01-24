@@ -45,6 +45,10 @@ TopologicalMapPanel::TopologicalMapPanel(QWidget* parent)
 {
   properties_view_ = new rviz::PropertyTreeWidget();
 
+  ros::NodeHandle nh;
+  addNodeSrv_ = nh.serviceClient<rviz_topmap::AddNode>("/topmap_interface/add_node", true);
+  delNodeSrv_ = nh.serviceClient<rviz_topmap::DeleteNode>("/topmap_interface/delete_node", true);
+
   QPushButton* add_button = new QPushButton("Add");
   QPushButton* remove_button = new QPushButton("Remove");
 
@@ -84,50 +88,62 @@ void TopologicalMapPanel::setTopmapManager(TopmapManager* topmap_man)
 
 void TopologicalMapPanel::onDeleteClicked()
 {
-  QList<NodeController*> views_to_delete = properties_view_->getSelectedObjects<NodeController>();
-
-  // for(int i = 0; i < views_to_delete.size(); i++)
-  // {
-  //   // TODO: should eventually move to a scheme where the CURRENT view
-  //   // is not in the same list as the saved views, at which point this
-  //   // check can go away.
-  //   if(views_to_delete[ i ] != topmap_man_->getCurrent())
-  //   {
-  //     delete views_to_delete[ i ];
-  //   }
-  // }
+  QList<NodeProperty*> nodes_to_delete = properties_view_->getSelectedObjects<NodeProperty>();
+  NodeController* controller = topmap_man_->getController();
+  
+  for(int i = 0; i < nodes_to_delete.size(); i++)
+  {
+    rviz_topmap::DeleteNode srv;
+    srv.request.node_name = nodes_to_delete[i]->getValue().toString().toStdString().c_str();
+    
+    if (delNodeSrv_.call(srv)) {
+      if (srv.response.success) {
+	delete controller->takeChild(nodes_to_delete[i]);
+	ROS_INFO("Successfully removed node %s", srv.request.node_name.c_str());
+      } else {
+	ROS_INFO("Failed to remove node %s: %s", srv.request.node_name.c_str(), srv.response.message.c_str());
+      }
+    } else {
+      ROS_INFO("Failed to remove node %s: %s", srv.request.node_name.c_str(), srv.response.message.c_str());
+    }
+  }
 }
 
 void TopologicalMapPanel::addNew()
 {
-  QList<NodeController*> views_to_rename = properties_view_->getSelectedObjects<NodeController>(); 
+  rviz_topmap::AddNode srv;
+  if (addNodeSrv_.call(srv)) {
+    ROS_INFO("Successfully added new node.");
+  } else {
+    ROS_INFO("Failed to add new node.");
+  }
 }
 
 void TopologicalMapPanel::renameSelected()
 {
-  QList<NodeController*> views_to_rename = properties_view_->getSelectedObjects<NodeController>();
-  if(views_to_rename.size() == 1)
-  {
-    NodeController* view = views_to_rename[ 0 ];
+  // QList<Node*> views_to_rename = properties_view_->getSelectedObjects<NodeController>();
+  // if(views_to_rename.size() == 1)
+  // {
+  //   NodeProperty* view = views_to_rename[ 0 ];
 
-    // TODO: should eventually move to a scheme where the CURRENT view
-    // is not in the same list as the saved views, at which point this
-    // check can go away.
-    if(view == topmap_man_->getCurrent())
-    {
-      return;
-    }
+  //   // TODO: should eventually move to a scheme where the CURRENT view
+  //   // is not in the same list as the saved views, at which point this
+  //   // check can go away.
+  //   if(view == topmap_man_->getCurrent())
+  //   {
+  //     return;
+  //   }
 
-    QString old_name = view->getName();
-    QString new_name = QInputDialog::getText(this, "Rename View", "New Name?", QLineEdit::Normal, old_name);
+  //   QString old_name = view->getName();
+  //   QString new_name = QInputDialog::getText(this, "Rename View", "New Name?", QLineEdit::Normal, old_name);
 
-    if(new_name.isEmpty() || new_name == old_name)
-    {
-      return;
-    }
+  //   if(new_name.isEmpty() || new_name == old_name)
+  //   {
+  //     return;
+  //   }
 
-    view->setName(new_name);
-  }
+  //   view->setName(new_name);
+  // }
 }
 
 void TopologicalMapPanel::onCurrentChanged()

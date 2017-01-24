@@ -36,6 +36,9 @@
 
 #include "rviz/properties/property_tree_widget.h"
 
+#include "rviz_topmap/AddNode.h"
+#include "rviz_topmap/DeleteNode.h"
+
 class QComboBox;
 class QModelIndex;
 class QPushButton;
@@ -79,6 +82,8 @@ private Q_SLOTS:
   void addNew();
   void onCurrentChanged();
 private:
+  ros::ServiceClient addNodeSrv_;
+  ros::ServiceClient delNodeSrv_;
   TopmapManager* topmap_man_;
   rviz::PropertyTreeWidget* properties_view_;
 };

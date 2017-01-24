@@ -73,12 +73,17 @@ NodeController* TopmapManager::create(const QString& class_id)
   // return view;
 }
 
-NodeController* TopmapManager::getCurrent() const
+NodeController* TopmapManager::getController() const
+{
+  return root_property_;
+}
+
+NodeProperty* TopmapManager::getCurrent() const
 {
   return current_;
 }
 
-void TopmapManager::setCurrentFrom(NodeController* source_view)
+void TopmapManager::setCurrentFrom(NodeProperty* source_view)
 {
   // if(source_view == NULL)
   // {
@@ -103,9 +108,9 @@ void TopmapManager::onCurrentDestroyed(QObject* obj)
   }
 }
 
-void TopmapManager::setCurrent(NodeController* new_current, bool mimic_view)
+void TopmapManager::setCurrent(NodeProperty* new_current, bool mimic_view)
 {
-  NodeController* previous = getCurrent();
+  NodeProperty* previous = getCurrent();
   if(previous)
   {
     disconnect(previous, SIGNAL(destroyed(QObject*)), this, SLOT(onCurrentDestroyed(QObject*)));
@@ -236,7 +241,7 @@ void TopmapManager::save(rviz::Config config) const
   // }
 }
 
-NodeController* TopmapManager::copy(NodeController* source)
+NodeProperty* TopmapManager::copy(NodeProperty* source)
 {
   // rviz::Config config;
   // source->save(config);
