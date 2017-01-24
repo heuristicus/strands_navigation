@@ -26,8 +26,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef EDGE_TOOL_H
-#define EDGE_TOOL_H
+#ifndef TOPMAP_EDGE_TOOL_H
+#define TOPMAP_EDGE_TOOL_H
 
 #include <ros/ros.h>
 #include <rviz/tool.h>
@@ -68,4 +68,4 @@ private:
 };
 } // end namespace rviz_topmap
 
-#endif // EDGE_TOOL_H
+#endif // TOPMAP_EDGE_TOOL_H

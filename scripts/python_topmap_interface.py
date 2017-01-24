@@ -48,7 +48,7 @@ class TopmapInterface(object):
             else:
                 break
 
-        self.topmap_updater.add_node(proposed_name, 0, Pose(), "move_base")
+        self.topmap_updater.add_node(proposed_name, 0, req.pose or Pose(), "move_base")
         self.map_update.publish(rospy.Time.now())
         return AddNodeResponse(True, "")
 
@@ -90,7 +90,6 @@ class TopmapInterface(object):
         return UpdateNodePoseResponse(True, "")
 
     def add_edge(self, req):
-
         def tuple_dist(pose_tuple):
             return math.sqrt(pow(pose_tuple[0].position.x - pose_tuple[1].position.x, 2)
                              + pow(pose_tuple[0].position.y - pose_tuple[1].position.y, 2))
@@ -120,6 +119,7 @@ class TopmapInterface(object):
         return AddEdgeResponse(True, message)
 
     def topmap_cb(self, msg):
+        rospy.loginfo("Topological map was updated via callback.")
         self.topmap = msg
 
 if __name__ == '__main__':

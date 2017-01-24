@@ -46,14 +46,11 @@ TopologicalMapPanel::TopologicalMapPanel(QWidget* parent)
   properties_view_ = new rviz::PropertyTreeWidget();
 
   ros::NodeHandle nh;
-  addNodeSrv_ = nh.serviceClient<rviz_topmap::AddNode>("/topmap_interface/add_node", true);
   delNodeSrv_ = nh.serviceClient<rviz_topmap::DeleteNode>("/topmap_interface/delete_node", true);
 
-  QPushButton* add_button = new QPushButton("Add");
   QPushButton* remove_button = new QPushButton("Remove");
 
   QHBoxLayout* button_layout = new QHBoxLayout;
-  button_layout->addWidget(add_button);
   button_layout->addWidget(remove_button);
   button_layout->setContentsMargins(2, 0, 2, 2);
 
@@ -63,7 +60,6 @@ TopologicalMapPanel::TopologicalMapPanel(QWidget* parent)
   main_layout->addLayout(button_layout);
   setLayout(main_layout);
 
-  connect(add_button, SIGNAL(clicked()), this, SLOT(addNew()));
   connect(remove_button, SIGNAL(clicked()), this, SLOT(onDeleteClicked()));
   // connect(properties_view_, SIGNAL(clicked(const QModelIndex&)), this, SLOT(setCurrentViewFromIndex(const QModelIndex&)));
   // connect(properties_view_, SIGNAL(activated(const QModelIndex&)), this, SLOT(setCurrentViewFromIndex(const QModelIndex&)));
@@ -106,16 +102,6 @@ void TopologicalMapPanel::onDeleteClicked()
     } else {
       ROS_INFO("Failed to remove node %s: %s", srv.request.node_name.c_str(), srv.response.message.c_str());
     }
-  }
-}
-
-void TopologicalMapPanel::addNew()
-{
-  rviz_topmap::AddNode srv;
-  if (addNodeSrv_.call(srv)) {
-    ROS_INFO("Successfully added new node.");
-  } else {
-    ROS_INFO("Failed to add new node.");
   }
 }
 

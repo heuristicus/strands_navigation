@@ -53,6 +53,7 @@ add_definitions(-DQT_NO_KEYWORDS)
 ## The generated MOC files are included automatically as headers.
 set(SRC_FILES
   src/topological_edge_tool.cpp
+  src/topological_node_tool.cpp
   src/topological_map_panel.cpp
   src/node_controller.cpp
   src/topmap_manager.cpp

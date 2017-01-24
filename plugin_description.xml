@@ -13,4 +13,12 @@
       Tool for manipulating edges in the strands topological map
     </description>
   </class>
+  <class name="rviz_topmap/TopmapNode"
+         type="rviz_topmap::TopmapNodeTool"
+         base_class_type="rviz::Tool">
+    <description>
+      Tool for adding nodes in the strands topological map
+    </description>
+  </class>
+
 </library>
