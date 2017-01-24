@@ -9,3 +9,4 @@ bool update_yaw
 float64 yaw_tolerance
 ---
 bool success
+string message

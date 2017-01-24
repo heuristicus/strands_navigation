@@ -12,6 +12,9 @@ NodeProperty::NodeProperty(const QString& name,
   : rviz::Property(name, default_value.name.c_str(), description, parent, changed_slot, this)
   , node_(default_value)
   , name_(default_value.name)
+  , xy_tol_value_(default_value.xy_goal_tolerance)
+  , yaw_tol_value_(default_value.yaw_goal_tolerance)
+  , reset_value_(false)
 {
   // manually connect the signals instead of using the constructor to do it.
   // Can't seem to get the connection to work if passing in the slot in the
@@ -53,43 +56,85 @@ NodeProperty::~NodeProperty()
 }
 
 void NodeProperty::updateYawTolerance(){
+  if (reset_value_){ // this function gets called when we reset a value when the service call fails, so ignore that.
+    reset_value_ = false;
+    return;
+  }
+
   rviz_topmap::UpdateNodeTolerance srv;
   srv.request.node_name = name_;
   srv.request.update_yaw = true;
   srv.request.yaw_tolerance = yaw_tolerance_->getFloat();
   
   if (toleranceUpdate_.call(srv)) {
-    ROS_INFO("Successfully updated tolerance for node %s to %f", name_.c_str(), srv.request.yaw_tolerance);
-    Q_EMIT nodeModified(this);
+    if (srv.response.success) {
+      ROS_INFO("Successfully updated yaw tolerance for node %s to %f", name_.c_str(), srv.request.yaw_tolerance);
+      Q_EMIT nodeModified(this);
+      yaw_tol_value_ = yaw_tolerance_->getFloat();
+    } else {
+      ROS_INFO("Failed to update yaw tolerance for node %s: %s", name_.c_str(), srv.response.message.c_str());
+      reset_value_ = true;
+      yaw_tolerance_->setValue(yaw_tol_value_);
+    }
   } else {
-    ROS_WARN("Failed to update yaw tolerance for node %s", name_.c_str());
+    ROS_WARN("Failed to get response from service to update yaw tolerance for node %s", name_.c_str());
+    reset_value_ = true;
+    yaw_tolerance_->setValue(yaw_tol_value_);
   }
 }
 
 void NodeProperty::updateXYTolerance(){
+  if (reset_value_){ // this function gets called when we reset a value when the service call fails, so ignore that.
+    reset_value_ = false;
+    return;
+  }
+
   rviz_topmap::UpdateNodeTolerance srv;
   srv.request.node_name = name_;
   srv.request.update_xy = true;
   srv.request.xy_tolerance = xy_tolerance_->getFloat();
   
   if (toleranceUpdate_.call(srv)) {
-    ROS_INFO("Successfully updated tolerance for node %s to %f", name_.c_str(), srv.request.xy_tolerance);
-    Q_EMIT nodeModified(this);
+    if (srv.response.success) {
+      ROS_INFO("Successfully updated tolerance for node %s to %f", name_.c_str(), srv.request.xy_tolerance);
+      Q_EMIT nodeModified(this);
+      xy_tol_value_ = xy_tolerance_->getFloat();
+    } else {
+      ROS_INFO("Failed to update xy tolerance of %s: %s", name_.c_str(), srv.response.message.c_str());
+      reset_value_ = true;
+      xy_tolerance_->setValue(xy_tol_value_);
+    }
   } else {
-    ROS_WARN("Failed to update xy tolerance for node %s", name_.c_str());
+    ROS_WARN("Failed to get response from service to update xy tolerance for node %s", name_.c_str());
+    reset_value_ = true;
+    xy_tolerance_->setValue(xy_tol_value_);
   }
 }
 
 void NodeProperty::updateNodeName(){
+  if (reset_value_){ // this function gets called when we reset a value when the service call fails, so ignore that.
+    reset_value_ = false;
+    return;
+  }
+
   rviz_topmap::UpdateNodeName srv;
   srv.request.node_name = name_;
   srv.request.new_name = this->getValue().toString().toStdString().c_str();
   
   if (nameUpdate_.call(srv)) {
-    ROS_INFO("Successfully updated node name %s to %s", name_.c_str(), srv.request.new_name.c_str());
-    Q_EMIT nodeModified(this);
+    if (srv.response.success) {
+      ROS_INFO("Successfully updated node name %s to %s", name_.c_str(), srv.request.new_name.c_str());
+      Q_EMIT nodeModified(this);
+      name_ = getValue().toString().toStdString();
+    } else {
+      ROS_INFO("Failed to update node name of %s to %s: %s", name_.c_str(), srv.request.new_name.c_str(), srv.response.message.c_str());
+      reset_value_ = true;
+      setValue(QString::fromStdString(name_));
+    }
   } else {
-    ROS_WARN("Failed to update name of node %s", name_.c_str());
+    ROS_WARN("Failed to get response from service to update node %s", name_.c_str());
+    reset_value_ = true;
+    setValue(QString::fromStdString(name_));
   }
   name_ = this->getValue().toString().toStdString();
 }

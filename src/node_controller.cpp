@@ -31,10 +31,10 @@ void NodeController::topmapCallback(const strands_navigation_msgs::TopologicalMa
   // If we're the ones who made the change, then we only replace the property
   // for the specific node that we changed, otherwise replace everything.
   if (modifiedChild_ == NULL) {
-    if (numChildren() != 0) {
-      for (;numChildren() != 0;) {
-	delete takeChildAt(0);
-      }
+    // Use takechildat to remove, because removeChildren doesn't change the
+    // child states, and can cause issues when the new properties are added.
+    for (;numChildren() != 0;) {
+      delete takeChildAt(0);
     }
     for (int i = 0; i < msg->nodes.size(); i++) {
       NodeProperty* newProp = new NodeProperty("Node", msg->nodes[i], "");

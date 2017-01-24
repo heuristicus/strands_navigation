@@ -51,6 +51,11 @@ private:
   // map - once it changes in the property we won't know its previous value
   // otherwise.
   std::string name_;
+  // Also store the editable values, in case the service call fails. We then
+  // reset the property value to its original value.
+  float xy_tol_value_;
+  float yaw_tol_value_;
+  bool reset_value_;
   PoseProperty* pose_;
   EdgeController* edge_controller_;
 };

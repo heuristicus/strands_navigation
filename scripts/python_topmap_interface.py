@@ -30,11 +30,9 @@ class TopmapInterface(object):
         rospy.spin()
         
     def update_node_tolerance(self, req):
-        print("got request {0}".format(req))
-        return UpdateNodeToleranceResponse(True)
+        return UpdateNodeToleranceResponse(True, "")
 
     def update_node_name(self, req):
-        print("got request {0}".format(req))
         this_node = None
         existing_node = None
         for node in self.topmap.nodes:
@@ -45,24 +43,20 @@ class TopmapInterface(object):
                 existing_node = True
 
         if not this_node:
-            print("The requested node didn't exist...That's weird.")
-            return UpdateNodeNameResponse(False)
+            print()
+            return UpdateNodeNameResponse(False, "The requested node didn't exist...That's weird.")
 
         if existing_node:
-            print("A node with the requested new name already existed.")
-            return UpdateNodeNameResponse(False)
+            return UpdateNodeNameResponse(False, "A node with the requested new name already existed.")
 
-        # There isn't a way to update the node name directly, so we just delete
-        # the node that's already there and replace it with a new one with the value updated.
-        self.topmap_updater.update_node_field(req.node_name, "name", req.new_name)
+        self.topmap_updater.update_node_name(req.node_name, req.new_name)
         self.map_update.publish(rospy.Time.now())
-        return UpdateNodeNameResponse(True)
+        return UpdateNodeNameResponse(True, "")
 
     def update_node_pose(self, req):
-        print("got request {0}".format(req))
         self.topmap_updater.update_node_waypoint(req.node_name, req.new_pose)
         self.map_update.publish(rospy.Time.now())
-        return UpdateNodePoseResponse(True)
+        return UpdateNodePoseResponse(True, "")
 
     def topmap_cb(self, msg):
         self.topmap = msg
