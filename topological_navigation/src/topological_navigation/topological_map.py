@@ -91,20 +91,7 @@ class topological_map(object):
             rospy.logerr("Impossible to store in DB "+str(len(available))+" waypoints found after query")
             rospy.logerr("Available data: "+str(available))
 
-    def update_node_field(self, node_name, edit_field, field_value):
-        """Edit a property of the node.
-
-        edit_field: A string of the name of the field to edit. To change the
-        name you would send "name". See the TopologicalNode message.
-
-        field_value: The new value the field should take. Should be of the same
-        type as the existing one.
-
-        """
-        if edit_field not in TopologicalNode.__slots__:
-            rospy.logerr("You can't update the field {0}, because it doesn't exist in TopologicalNode.".format(edit_field))
-            return
-
+    def update_node_name(self, node_name, new_name):
         msg_store = MessageStoreProxy(collection='topological_maps')
         # The query retrieves the node name with the given name from the given pointset.
         query = {"name": node_name, "pointset": self.name}
@@ -116,8 +103,35 @@ class topological_map(object):
         # This returns a tuple containing the object, if it exists, and some
         # information about how it's stored in the database.
         available = msg_store.query(TopologicalNode._type, query, query_meta)
+
         if len(available) == 1:
-            setattr(available[0][0], edit_field, field_value)
+            available[0][0].name = new_name
+            # Also need to update all edges which involve the renamed node
+            allnodes_query = {"pointset": self.name}
+            allnodes_query_meta = {}
+            allnodes_query_meta["pointset"] = self.name
+            allnodes_query_meta["map"] = self.map
+            # this produces a list of tuples, each with [0] as the node, [1] as database info
+            allnodes_available = msg_store.query(TopologicalNode._type, {}, allnodes_query_meta)
+            
+            # Check the edges of each node for a reference to the node to be
+            # renamed, and change the edge id if there is one. Enumerate the
+            # values so that we can edit the objects in place to send them back
+            # to the database.
+            for node_ind, node_tpl in enumerate(allnodes_available):
+                for edge_ind, edge in enumerate(node_tpl[0].edges):
+                    # change names of the edges in other nodes, and update their values in the database
+                    if node_tpl[0].name != node_name and node_name in edge.edge_id:
+                        allnodes_available[node_ind][0].edges[edge_ind].edge_id = edge.edge_id.replace(node_name, new_name)
+                        # must also update the name of the node this edge goes to
+                        allnodes_available[node_ind][0].edges[edge_ind].node = new_name
+                        curnode_query = {"name": node_tpl[0].name, "pointset": self.name}
+                        msg_store.update(allnodes_available[node_ind][0], allnodes_query_meta, curnode_query, upsert=True)
+
+            # update all edge ids for this node
+            for edge_ind, edge in enumerate(available[0][0].edges):
+                available[0][0].edges[edge_ind].edge_id = edge.edge_id.replace(node_name, new_name)
+
             msg_store.update(available[0][0], query_meta, query, upsert=True)
         else:
             rospy.logerr("Impossible to store in DB "+str(len(available))+" waypoints found after query")
@@ -143,9 +157,11 @@ class topological_map(object):
                     break
             if not found:
                 edge = Edge()
+                edge.edge_id = "{0}_{1}".format(or_waypoint, de_waypoint)
                 edge.node = de_waypoint
                 edge.action = action
                 edge.top_vel = 0.55
+                edge.map_2d = available[0][0].map
                 available[0][0].edges.append(edge)
                 msg_store.update(available[0][0], query_meta, query, upsert=True)
             else:
@@ -244,6 +260,8 @@ class topological_map(object):
             for i in close_nodes:
                 self.add_edge(i, name, std_action)
 
+        # need to reload the map when a node is added, for consistency
+        self.loadMap(self.name)
 
     def delete_map(self):
 
@@ -258,6 +276,8 @@ class topological_map(object):
             rm_id = str(i[1]['_id'])
             msg_store.delete(rm_id)
 
+        # need to reload the map when a node is deleted, for consistency
+        self.loadMap(self.name)
 
     def map_from_msg(self, nodes):
         #self.topol_map = msg.pointset
