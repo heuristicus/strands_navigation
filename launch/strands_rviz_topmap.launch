@@ -1,7 +1,6 @@
 <launch>
   <arg name="topmap" default="tsc_1611"/>
   <arg name="map" default="$(find rviz_topmap)/maps/tsc_1611/tsc_1611.yaml"/>
-  <arg name="topological_navigation_retries" default="3"/>
 
   <include file="$(find mongodb_store)/launch/mongodb_store.launch">
     <arg name="db_path" value="/home/michal/mongo/test_db"/>
@@ -13,9 +12,9 @@
 
   <node pkg="topological_navigation" name="topological_map_manager" type="map_manager.py" args="$(arg topmap)"/>
 
-  <node pkg="topological_navigation" name="topological_navigation" type="navigation.py" output="screen" respawn="true">
-    <param name="retries" type="int" value="$(arg topological_navigation_retries)"/>
-  </node>
+  <include file="$(find topological_utils)/launch/dummy_topological_navigation.launch">
+    <arg name="map" value="$(arg topmap)"/>
+  </include>
 
   <node pkg="topological_navigation" name="visualise_map" type="visualise_map.py" args="$(arg topmap)" output="screen"/>
 
@@ -23,5 +22,5 @@
     <param name="map_name" value="$(arg topmap)"/>
   </node>
 
-  <!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find rviz_topmap)/conf/rviz_topmap.rviz" output="screen"/> -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find rviz_topmap)/conf/rviz_topmap.rviz" output="screen"/>
 </launch>
