@@ -6,7 +6,7 @@
 #include "rviz/properties/float_property.h"
 #include "strands_navigation_msgs/Edge.h"
 
-namespace rviz_topmap
+namespace topological_rviz_tools
 {
 
 /** @brief Property specialized to provide getter for booleans. */
@@ -38,6 +38,6 @@ private:
   rviz::FloatProperty* top_vel_;
 };
 
-} // end namespace rviz_topmap
+} // end namespace topological_rviz_tools
 
 #endif // EDGE_PROPERTY_H

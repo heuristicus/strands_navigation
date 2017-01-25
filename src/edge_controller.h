@@ -29,7 +29,7 @@
 
 class QKeyEvent;
 
-namespace rviz_topmap {
+namespace topological_rviz_tools {
 class EdgeController: public rviz::Property
 {
 Q_OBJECT
@@ -75,6 +75,6 @@ private:
   std::vector<EdgeProperty*> edges_;
 };
 
-} // end namespace rviz_topmap
+} // end namespace topological_rviz_tools
 
 #endif // TOPMAP_EDGE_CONTROLLER_H

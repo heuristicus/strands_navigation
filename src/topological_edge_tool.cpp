@@ -12,7 +12,7 @@
 
 #include "topological_edge_tool.h"
 
-namespace rviz_topmap
+namespace topological_rviz_tools
 {
 
 // BEGIN_TUTORIAL
@@ -65,7 +65,7 @@ TopmapEdgeTool::~TopmapEdgeTool()
 void TopmapEdgeTool::onInitialize()
 {
   ros::NodeHandle nh;
-  addEdgeSrv_ = nh.serviceClient<rviz_topmap::AddEdge>("/topmap_interface/add_edge", true);
+  addEdgeSrv_ = nh.serviceClient<topological_rviz_tools::AddEdge>("/topmap_interface/add_edge", true);
   markerPub_ = nh.advertise<visualization_msgs::Marker>("edge_tool_marker", 0);
 }
 
@@ -135,7 +135,7 @@ int TopmapEdgeTool::processMouseEvent(rviz::ViewportMouseEvent& event)
       } else {
 	// On the second click, send the edge to the service to be added to the
 	// map, and then reset the poses.
-	rviz_topmap::AddEdge srv;
+	topological_rviz_tools::AddEdge srv;
 	srv.request.first = firstClick_;
 	srv.request.second = event_pose;
 	srv.request.max_distance = 5.0; // be relatively accurate with clicks
@@ -163,7 +163,7 @@ int TopmapEdgeTool::processMouseEvent(rviz::ViewportMouseEvent& event)
 
   return Render;
 }
-} // end namespace rviz_topmap
+} // end namespace topological_rviz_tools
 
 #include <pluginlib/class_list_macros.h>
-PLUGINLIB_EXPORT_CLASS(rviz_topmap::TopmapEdgeTool,rviz::Tool)
+PLUGINLIB_EXPORT_CLASS(topological_rviz_tools::TopmapEdgeTool,rviz::Tool)

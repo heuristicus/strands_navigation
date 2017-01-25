@@ -1,6 +1,6 @@
 #include "node_property.h"
 
-namespace rviz_topmap
+namespace topological_rviz_tools
 {
 
 NodeProperty::NodeProperty(const QString& name,
@@ -22,8 +22,8 @@ NodeProperty::NodeProperty(const QString& name,
   connect(this, SIGNAL(changed()), this, SLOT(updateNodeName()));
 
   ros::NodeHandle nh;
-  nameUpdate_ = nh.serviceClient<rviz_topmap::UpdateNodeName>("/topmap_interface/update_node_name", true);
-  toleranceUpdate_ = nh.serviceClient<rviz_topmap::UpdateNodeTolerance>("/topmap_interface/update_node_tolerance", true);
+  nameUpdate_ = nh.serviceClient<topological_rviz_tools::UpdateNodeName>("/topmap_interface/update_node_name", true);
+  toleranceUpdate_ = nh.serviceClient<topological_rviz_tools::UpdateNodeTolerance>("/topmap_interface/update_node_tolerance", true);
 
   map_ = new rviz::StringProperty("Map", node_.map.c_str(), "", this);
   map_->setReadOnly(true);
@@ -61,7 +61,7 @@ void NodeProperty::updateYawTolerance(){
     return;
   }
 
-  rviz_topmap::UpdateNodeTolerance srv;
+  topological_rviz_tools::UpdateNodeTolerance srv;
   srv.request.node_name = name_;
   srv.request.update_yaw = true;
   srv.request.yaw_tolerance = yaw_tolerance_->getFloat();
@@ -89,7 +89,7 @@ void NodeProperty::updateXYTolerance(){
     return;
   }
 
-  rviz_topmap::UpdateNodeTolerance srv;
+  topological_rviz_tools::UpdateNodeTolerance srv;
   srv.request.node_name = name_;
   srv.request.update_xy = true;
   srv.request.xy_tolerance = xy_tolerance_->getFloat();
@@ -117,7 +117,7 @@ void NodeProperty::updateNodeName(){
     return;
   }
 
-  rviz_topmap::UpdateNodeName srv;
+  topological_rviz_tools::UpdateNodeName srv;
   srv.request.node_name = name_;
   srv.request.new_name = this->getValue().toString().toStdString().c_str();
   
@@ -143,4 +143,4 @@ void NodeProperty::nodePropertyUpdated(){
   Q_EMIT nodeModified(this);
 }
 
-} // end namespace rviz_topmap
+} // end namespace topological_rviz_tools

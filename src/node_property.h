@@ -6,12 +6,12 @@
 #include "rviz/properties/string_property.h"
 #include "rviz/properties/float_property.h"
 #include "strands_navigation_msgs/TopologicalNode.h"
-#include "rviz_topmap/UpdateNodeName.h"
-#include "rviz_topmap/UpdateNodeTolerance.h"
+#include "topological_rviz_tools/UpdateNodeName.h"
+#include "topological_rviz_tools/UpdateNodeTolerance.h"
 #include "pose_property.h"
 #include "edge_controller.h"
 
-namespace rviz_topmap
+namespace topological_rviz_tools
 {
 
 /** @brief Property specialized to provide getter for booleans. */
@@ -60,6 +60,6 @@ private:
   EdgeController* edge_controller_;
 };
 
-} // end namespace rviz_topmap
+} // end namespace topological_rviz_tools
 
 #endif // NODE_PROPERTY_H

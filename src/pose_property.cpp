@@ -1,6 +1,6 @@
 #include "pose_property.h"
 
-namespace rviz_topmap
+namespace topological_rviz_tools
 {
 
 PoseProperty::PoseProperty(const QString& name,
@@ -18,7 +18,7 @@ PoseProperty::PoseProperty(const QString& name,
   setReadOnly(true); // can't change the name of this pose
 
   ros::NodeHandle nh;
-  poseUpdate_ = nh.serviceClient<rviz_topmap::UpdateNodePose>("/topmap_interface/update_node_pose", true);
+  poseUpdate_ = nh.serviceClient<topological_rviz_tools::UpdateNodePose>("/topmap_interface/update_node_pose", true);
 
   orientation_ = new rviz::StringProperty("Orientation", "", "", this);
   orientation_w_ = new rviz::FloatProperty("w", pose_.orientation.w, "",  orientation_);
@@ -58,7 +58,7 @@ PoseProperty::~PoseProperty()
 
 void PoseProperty::positionUpdated()
 {
-  rviz_topmap::UpdateNodePose srv;
+  topological_rviz_tools::UpdateNodePose srv;
   srv.request.node_name = getParent()->getValue().toString().toStdString().c_str();
   srv.request.new_pose.position.x = position_x_->getFloat();
   srv.request.new_pose.position.y = position_y_->getFloat();
@@ -76,4 +76,4 @@ void PoseProperty::positionUpdated()
   }
 }
 
-} // end namespace rviz_topmap
+} // end namespace topological_rviz_tools

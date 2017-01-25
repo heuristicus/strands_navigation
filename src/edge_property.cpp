@@ -1,6 +1,6 @@
 #include "edge_property.h"
 
-namespace rviz_topmap
+namespace topological_rviz_tools
 {
 
 EdgeProperty::EdgeProperty(const QString& name,
@@ -37,4 +37,4 @@ EdgeProperty::~EdgeProperty()
   delete inflation_radius_;
 }
 
-} // end namespace rviz_topmap
+} // end namespace topological_rviz_tools

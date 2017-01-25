@@ -1,5 +1,5 @@
 <package>
-  <name>rviz_topmap</name>
+  <name>topological_rviz_tools</name>
   <version>0.0.1</version>
   <description>
     Topological map construction for strands

@@ -4,7 +4,7 @@
 #include <ros/ros.h>
 #include <rviz/tool.h>
 #include "geometry_msgs/Pose.h"
-#include "rviz_topmap/AddNode.h"
+#include "topological_rviz_tools/AddNode.h"
 
 namespace rviz
 {
@@ -13,7 +13,7 @@ class VisualizationManager;
 class ViewportMouseEvent;
 }
 
-namespace rviz_topmap
+namespace topological_rviz_tools
 {
 
 // BEGIN_TUTORIAL
@@ -36,6 +36,6 @@ public:
 private:
   ros::ServiceClient addNodeSrv_;
 };
-} // end namespace rviz_topmap
+} // end namespace topological_rviz_tools
 
 #endif // TOPMAP_NODE_TOOL_H

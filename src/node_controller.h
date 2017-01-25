@@ -30,7 +30,7 @@
 
 class QKeyEvent;
 
-namespace rviz_topmap {
+namespace topological_rviz_tools {
 class NodeController: public rviz::Property
 {
 Q_OBJECT
@@ -84,6 +84,6 @@ private:
   rviz::Property* modifiedChild_;
 };
 
-} // end namespace rviz_topmap
+} // end namespace topological_rviz_tools
 
 #endif // TOPMAP_NODE_CONTROLLER_H

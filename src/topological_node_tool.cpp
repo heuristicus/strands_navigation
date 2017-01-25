@@ -12,7 +12,7 @@
 
 #include "topological_node_tool.h"
 
-namespace rviz_topmap
+namespace topological_rviz_tools
 {
 
 // BEGIN_TUTORIAL
@@ -51,7 +51,7 @@ TopmapNodeTool::~TopmapNodeTool()
 void TopmapNodeTool::onInitialize()
 {
   ros::NodeHandle nh;
-  addNodeSrv_ = nh.serviceClient<rviz_topmap::AddNode>("/topmap_interface/add_node", true);
+  addNodeSrv_ = nh.serviceClient<topological_rviz_tools::AddNode>("/topmap_interface/add_node", true);
 }
 
 // Activation and deactivation
@@ -92,7 +92,7 @@ int TopmapNodeTool::processMouseEvent(rviz::ViewportMouseEvent& event)
       clicked.position.z = intersection.z;
       // On the second click, send the edge to the service to be added to the
       // map, and then reset the poses.
-      rviz_topmap::AddNode srv;
+      topological_rviz_tools::AddNode srv;
       srv.request.pose = clicked;
 
       if (addNodeSrv_.call(srv)){
@@ -110,7 +110,7 @@ int TopmapNodeTool::processMouseEvent(rviz::ViewportMouseEvent& event)
   }
 }
 
-} // end namespace rviz_topmap
+} // end namespace topological_rviz_tools
 
 #include <pluginlib/class_list_macros.h>
-PLUGINLIB_EXPORT_CLASS(rviz_topmap::TopmapNodeTool, rviz::Tool)
+PLUGINLIB_EXPORT_CLASS(topological_rviz_tools::TopmapNodeTool, rviz::Tool)

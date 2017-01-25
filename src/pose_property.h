@@ -2,13 +2,13 @@
 #define POSE_PROPERTY_H
 
 #include "ros/ros.h"
-#include "rviz_topmap/UpdateNodePose.h"
+#include "topological_rviz_tools/UpdateNodePose.h"
 #include "geometry_msgs/Pose.h"
 #include "rviz/properties/property.h"
 #include "rviz/properties/float_property.h"
 #include "rviz/properties/string_property.h"
 
-namespace rviz_topmap
+namespace topological_rviz_tools
 {
 
 /** @brief Property specialized to provide getter for booleans. */
@@ -46,6 +46,6 @@ private:
   ros::ServiceClient poseUpdate_;
 };
 
-} // end namespace rviz_topmap
+} // end namespace topological_rviz_tools
 
 #endif // POSE_PROPERTY_H

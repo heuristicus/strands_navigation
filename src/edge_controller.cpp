@@ -1,7 +1,7 @@
 #include "node_controller.h"
 
 
-namespace rviz_topmap
+namespace topological_rviz_tools
 {
 EdgeController::EdgeController(const QString& name,
 			       const std::vector<strands_navigation_msgs::Edge>& default_values,
@@ -80,4 +80,4 @@ void EdgeController::save(rviz::Config config) const
   // rviz::Property::save(config);
 }
 
-} // end namespace rviz_topmap
+} // end namespace topological_rviz_tools

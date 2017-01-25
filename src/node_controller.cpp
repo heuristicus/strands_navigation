@@ -1,7 +1,7 @@
 #include "node_controller.h"
 
 
-namespace rviz_topmap
+namespace topological_rviz_tools
 {
 NodeController::NodeController()
   : rviz::Property()
@@ -99,4 +99,4 @@ void NodeController::save(rviz::Config config) const
   rviz::Property::save(config);
 }
 
-} // end namespace rviz_topmap
+} // end namespace topological_rviz_tools

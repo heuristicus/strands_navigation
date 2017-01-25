@@ -4,7 +4,7 @@
 ##
 ## First start with some standard catkin stuff.
 cmake_minimum_required(VERSION 2.8.3)
-project(rviz_topmap)
+project(topological_rviz_tools)
 find_package(catkin REQUIRED COMPONENTS message_generation rviz roscpp strands_navigation_msgs geometry_msgs std_msgs)
 
 add_service_files(
