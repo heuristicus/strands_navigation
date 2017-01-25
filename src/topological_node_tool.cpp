@@ -104,8 +104,9 @@ int TopmapNodeTool::processMouseEvent(rviz::ViewportMouseEvent& event)
       } else {
 	ROS_WARN("Failed to add node: %s", srv.response.message.c_str());
       }
+      return Render | Finished;
     }
-    return Render | Finished;
+    return Render;
   }
 }
 

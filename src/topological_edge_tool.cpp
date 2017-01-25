@@ -105,8 +105,8 @@ int TopmapEdgeTool::processMouseEvent(rviz::ViewportMouseEvent& event)
 	srv.request.first = firstClick_;
 	srv.request.second = clicked;
 	srv.request.max_distance = 5.0; // be relatively accurate with clicks
-	// if right clicked, add bidirectional edge
-	srv.request.bidirectional = left ? false : true;
+	// if left clicked, add bidirectional edge
+	srv.request.bidirectional = right ? false : true;
 
 	if (addEdgeSrv_.call(srv)){
 	  if (srv.response.success) {

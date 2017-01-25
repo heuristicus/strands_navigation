@@ -21,7 +21,7 @@ EdgeProperty::EdgeProperty(const QString& name,
   action_->setReadOnly(true);
   map_2d_ = new rviz::StringProperty("Map 2D", edge_.map_2d.c_str(), "", this);
   map_2d_->setReadOnly(true);
-  top_vel_ = new rviz::FloatProperty("Edge ID", edge_.top_vel, "", this);
+  top_vel_ = new rviz::FloatProperty("Top vel", edge_.top_vel, "", this);
   top_vel_->setReadOnly(true);
   inflation_radius_ = new rviz::FloatProperty("Inflation radius", edge_.inflation_radius, "", this);
   inflation_radius_->setReadOnly(true);
