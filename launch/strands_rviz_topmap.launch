@@ -1,6 +1,6 @@
 <launch>
   <arg name="topmap" default="tsc_1611"/>
-  <arg name="map" default="$(find rviz_topmap)/maps/tsc_1611/tsc_1611.yaml"/>
+  <arg name="map" default="$(find topological_rviz_tools)/maps/tsc_1611/tsc_1611.yaml"/>
 
   <include file="$(find mongodb_store)/launch/mongodb_store.launch">
     <arg name="db_path" value="/home/michal/mongo/test_db"/>
@@ -18,9 +18,9 @@
 
   <node pkg="topological_navigation" name="visualise_map" type="visualise_map.py" args="$(arg topmap)" output="screen"/>
 
-  <node pkg="rviz_topmap" name="topmap_interface" type="python_topmap_interface.py" output="screen">
+  <node pkg="topological_rviz_tools" name="topmap_interface" type="python_topmap_interface.py" output="screen">
     <param name="map_name" value="$(arg topmap)"/>
   </node>
 
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find rviz_topmap)/conf/rviz_topmap.rviz" output="screen"/>
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find topological_rviz_tools)/conf/topological_rviz_tools.rviz" output="screen"/>
 </launch>
