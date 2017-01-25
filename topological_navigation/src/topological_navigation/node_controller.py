@@ -34,9 +34,8 @@ class WaypointControllers(object):
         self._marker_server.clear()
         self._marker_server.applyChanges()
       
-        if self.topo_map.nodes:
-            for i in self.topo_map.nodes :
-                self._create_marker(i.name, i._get_pose(), i.name)
+        for i in self.topo_map.nodes :
+            self._create_marker(i.name, i._get_pose(), i.name)
 
     """
      MapCallback
