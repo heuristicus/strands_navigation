@@ -108,6 +108,9 @@ class TopmapInterface(object):
         from_name = self.topmap.nodes[closest_from_ind].name
         to_name = self.topmap.nodes[closest_to_ind].name
 
+        if from_name == to_name:
+            return AddEdgeResponse(True, "Can't have an edge from a node to itself.")
+
         message = "Added edge from {0} to {1}".format(from_name, to_name)
 
         self.topmap_updater.add_edge(from_name, to_name, "move_base")

@@ -28,6 +28,19 @@ TopmapEdgeTool::TopmapEdgeTool()
   : noClick_(true)
 {
   shortcut_key_ = 'e';
+
+  // Initialise the marker with some defaults
+  edgeMarker_.header.frame_id = "map";
+  edgeMarker_.ns = "edge_tool_markers";
+  edgeMarker_.id = 0;
+  edgeMarker_.type = visualization_msgs::Marker::ARROW;
+  edgeMarker_.scale.x = 0.1;
+  edgeMarker_.scale.y = 0.15;
+  edgeMarker_.scale.z = 0.2;
+  edgeMarker_.color.a = 1.0; // Don't forget to set the alpha!
+  edgeMarker_.color.r = 0.0;
+  edgeMarker_.color.g = 1.0;
+  edgeMarker_.color.b = 0.0;
 }
 
 // The destructor destroys the Ogre scene nodes for the flags so they
@@ -53,6 +66,7 @@ void TopmapEdgeTool::onInitialize()
 {
   ros::NodeHandle nh;
   addEdgeSrv_ = nh.serviceClient<rviz_topmap::AddEdge>("/topmap_interface/add_edge", true);
+  markerPub_ = nh.advertise<visualization_msgs::Marker>("edge_tool_marker", 0);
 }
 
 // Activation and deactivation
@@ -68,6 +82,11 @@ void TopmapEdgeTool::activate()
 // another tool has been chosen.
 void TopmapEdgeTool::deactivate()
 {
+  noClick_ = true;
+  edgeMarker_.action = visualization_msgs::Marker::DELETE;
+  edgeMarker_.points.clear();
+  edgeMarker_.header.stamp = ros::Time();
+  markerPub_.publish(edgeMarker_);
 }
 
 // Handling mouse events
@@ -89,21 +108,36 @@ int TopmapEdgeTool::processMouseEvent(rviz::ViewportMouseEvent& event)
     bool left = event.leftDown();
     bool right = event.rightDown();
 
-    if (right || left){
-      geometry_msgs::Pose clicked = geometry_msgs::Pose();
-      clicked.position.x = intersection.x;
-      clicked.position.y = intersection.y;
-      clicked.position.z = intersection.z;
+    geometry_msgs::Pose event_pose = geometry_msgs::Pose();
+    event_pose.position.x = intersection.x;
+    event_pose.position.y = intersection.y;
+    event_pose.position.z = intersection.z;
 
+    if (edgeMarker_.points.size() > 1) {
+      // Remove the second pose in points vector, with the previous pose of the
+      // mouse.
+      edgeMarker_.points.pop_back();
+    }
+
+    if (!noClick_){
+      // If the first click happened, then we update the endpoint of the arrow each time the mouse moves.
+      edgeMarker_.points.push_back(event_pose.position);
+      edgeMarker_.header.stamp = ros::Time();
+      edgeMarker_.action = visualization_msgs::Marker::ADD;
+      markerPub_.publish(edgeMarker_);
+    }
+
+    if (right || left){
       if (noClick_){
-	firstClick_ = clicked;
+	firstClick_ = event_pose;
+	edgeMarker_.points.push_back(event_pose.position);
 	noClick_ = false;
       } else {
 	// On the second click, send the edge to the service to be added to the
 	// map, and then reset the poses.
 	rviz_topmap::AddEdge srv;
 	srv.request.first = firstClick_;
-	srv.request.second = clicked;
+	srv.request.second = event_pose;
 	srv.request.max_distance = 5.0; // be relatively accurate with clicks
 	// if left clicked, add bidirectional edge
 	srv.request.bidirectional = right ? false : true;
@@ -117,6 +151,10 @@ int TopmapEdgeTool::processMouseEvent(rviz::ViewportMouseEvent& event)
 	} else {
 	  ROS_WARN("Failed to add edge: %s", srv.response.message.c_str());
 	}
+	edgeMarker_.action = visualization_msgs::Marker::DELETE;
+	edgeMarker_.points.clear();
+	edgeMarker_.header.stamp = ros::Time();
+	markerPub_.publish(edgeMarker_);
 	noClick_ = true;
       }
       return Render;

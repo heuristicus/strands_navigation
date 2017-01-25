@@ -82,6 +82,14 @@ Visualization Manager:
       Show Visual Aids: false
       Update Topic: /topological_map_edges/update
       Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /edge_tool_marker
+      Name: Marker
+      Namespaces:
+        {}
+      Queue Size: 100
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -108,9 +116,9 @@ Visualization Manager:
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -5.11758
-        Y: 4.48414
-        Z: -0.636697
+        X: -20.7933
+        Y: 5.65542
+        Z: -0.637784
       Name: Current View
       Near Clip Distance: 0.01
       Pitch: 1.5698

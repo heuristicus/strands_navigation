@@ -31,7 +31,8 @@
 
 #include <ros/ros.h>
 #include <rviz/tool.h>
-#include "geometry_msgs/Pose.h"
+#include <visualization_msgs/Marker.h>
+#include <geometry_msgs/Pose.h>
 #include "rviz_topmap/AddEdge.h"
 
 namespace rviz
@@ -62,9 +63,11 @@ public:
 
   virtual int processMouseEvent(rviz::ViewportMouseEvent& event);
 private:
+  ros::Publisher markerPub_;
   ros::ServiceClient addEdgeSrv_;
   bool noClick_; // true if nothing clicked yet
   geometry_msgs::Pose firstClick_;
+  visualization_msgs::Marker edgeMarker_;
 };
 } // end namespace rviz_topmap
 
