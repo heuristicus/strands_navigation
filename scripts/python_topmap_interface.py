@@ -4,7 +4,7 @@ import rospy
 import math
 import operator
 from std_msgs.msg import Time
-from rviz_topmap.srv import *
+from topological_rviz_tools.srv import *
 from topological_navigation.topological_map import topological_map as TopologicalMapUpdater
 from strands_navigation_msgs.msg import TopologicalMap
 from geometry_msgs.msg import Pose
