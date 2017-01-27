@@ -45,6 +45,7 @@ private:
   rviz::StringProperty* node_name_;
   rviz::StringProperty* map_;
   rviz::StringProperty* pointset_;
+  rviz::StringProperty* localise_;
   rviz::FloatProperty* yaw_tolerance_;
   rviz::FloatProperty* xy_tolerance_;
   // Store the name so that we can refer to it to change the node name in the

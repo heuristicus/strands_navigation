@@ -31,6 +31,9 @@ NodeProperty::NodeProperty(const QString& name,
   pointset_ = new rviz::StringProperty("Pointset", node_.pointset.c_str(), "", this);
   pointset_->setReadOnly(true);
 
+  localise_ = new rviz::StringProperty("Localise by topic", node_.localise_by_topic.c_str(), "", this);
+  localise_->setReadOnly(true);
+
   yaw_tolerance_ = new rviz::FloatProperty("Yaw Tolerance", node_.yaw_goal_tolerance,
 					   "The robot is facing the right direction if the"
 					   " difference between the current yaw and the node's"
