@@ -28,6 +28,7 @@ class TopmapInterface(object):
 
         self.topmap_sub = rospy.Subscriber("topological_map", TopologicalMap, self.topmap_cb)
         self.update_name_srv = rospy.Service("~update_node_name", UpdateNodeName, self.update_node_name)
+        self.update_edge_srv = rospy.Service("~update_edge", UpdateEdge, self.update_edge)
         self.update_tolerance_srv = rospy.Service("~update_node_tolerance", UpdateNodeTolerance, self.update_node_tolerance)
         self.update_pose_srv = rospy.Service("~update_node_pose", UpdateNodePose, self.update_node_pose)
         self.add_node_srv = rospy.Service("~add_node", AddNode, self.add_new_node)
@@ -120,6 +121,13 @@ class TopmapInterface(object):
 
         self.map_update.publish(rospy.Time.now())
         return AddEdgeResponse(True, message)
+
+    def update_edge(self, msg):
+        node_names = msg.edge_id.split('_')
+        self.topmap_updater.update_edge(node_names[0], msg.edge_id, msg.action, msg.top_vel)
+        self.map_update.publish(rospy.Time.now())
+        message = ""
+        return UpdateEdgeResponse(True, message)
 
     def topmap_cb(self, msg):
         rospy.loginfo("Topological map was updated via callback.")

@@ -1,10 +1,12 @@
 #ifndef EDGE_PROPERTY_H
 #define EDGE_PROPERTY_H
 
+#include "ros/ros.h"
 #include "rviz/properties/property.h"
 #include "rviz/properties/string_property.h"
 #include "rviz/properties/float_property.h"
 #include "strands_navigation_msgs/Edge.h"
+#include "topological_rviz_tools/UpdateEdge.h"
 
 namespace topological_rviz_tools
 {
@@ -23,13 +25,23 @@ public:
 
   virtual ~EdgeProperty();
 public Q_SLOTS:
-  void topVelChanged();
+  void updateAction();
+  void updateTopvel();
 
 Q_SIGNALS:
   void edgeModified();
 
 private:
   const strands_navigation_msgs::Edge& edge_;
+  
+  // keep track of changing values to ensure that they are redisplayed correctly
+  // when we fail to update.
+  std::string action_value_;
+  float topvel_value_;
+
+  bool reset_value_;
+  ros::ServiceClient edgeUpdate_;
+
   rviz::StringProperty* edge_id_;
   rviz::StringProperty* node_;
   rviz::StringProperty* action_;

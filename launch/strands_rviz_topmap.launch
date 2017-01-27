@@ -2,6 +2,7 @@
   <arg name="topmap" default="tsc_1611"/>
   <arg name="map" default="$(find topological_rviz_tools)/maps/tsc_1611/tsc_1611.yaml"/>
   <arg name="db_path" default="/home/michal/mongo/test_db"/>
+  <arg name="rviz" default="true"/>
 
   <include file="$(find mongodb_store)/launch/mongodb_store.launch">
     <arg name="db_path" value="$(arg db_path)"/>
@@ -23,5 +24,7 @@
     <param name="map_name" value="$(arg topmap)"/>
   </node>
 
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find topological_rviz_tools)/conf/topological_rviz_tools.rviz" output="screen"/>
+  <group if="$(arg rviz)">
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find topological_rviz_tools)/conf/topological_rviz_tools.rviz" output="screen"/>
+  </group>
 </launch>
