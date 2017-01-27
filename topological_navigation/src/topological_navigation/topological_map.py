@@ -91,6 +91,29 @@ class topological_map(object):
             rospy.logerr("Impossible to store in DB "+str(len(available))+" waypoints found after query")
             rospy.logerr("Available data: "+str(available))
 
+    def update_edge(self, node_name, edge_id, new_action=None, new_top_vel=None):
+        msg_store = MessageStoreProxy(collection='topological_maps')
+        # The query retrieves the node name with the given name from the given pointset.
+        query = {"name": node_name, "pointset": self.name}
+        # The meta-information is some additional information about the specific
+        # map that we are interested in (?)
+        query_meta = {}
+        query_meta["pointset"] = self.name
+        query_meta["map"] = self.map
+        # This returns a tuple containing the object, if it exists, and some
+        # information about how it's stored in the database.
+        available = msg_store.query(TopologicalNode._type, query, query_meta)
+        if len(available) == 1:
+            for edge in available[0][0].edges:
+                if edge.edge_id == edge_id:
+                    edge.action = new_action or edge.action
+                    edge.top_vel = new_top_vel or edge.top_vel
+                
+            msg_store.update(available[0][0], query_meta, query, upsert=True)
+        else:
+            rospy.logerr("Impossible to store in DB "+str(len(available))+" waypoints found after query")
+            rospy.logerr("Available data: "+str(available))
+
     def update_node_name(self, node_name, new_name):
         msg_store = MessageStoreProxy(collection='topological_maps')
         # The query retrieves the node name with the given name from the given pointset.
