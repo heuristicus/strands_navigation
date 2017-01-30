@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import math
 import rospy
+import warnings
 
 from topological_navigation.topological_node import *
 from strands_navigation_msgs.msg import TopologicalNode, Edge, Vertex
@@ -9,6 +10,22 @@ from strands_navigation_msgs.msg import TopologicalNode, Edge, Vertex
 from mongodb_store.message_store import MessageStoreProxy
 #import topological_navigation.msg
 
+
+# from http://code.activestate.com/recipes/391367-deprecated/
+def deprecated(func):
+    """This is a decorator which can be used to mark functions
+    as deprecated. It will result in a warning being emmitted
+    when the function is used."""
+    def newFunc(*args, **kwargs):
+        warnings.warn("Call to deprecated function %s of topological_map. You should use functions from topological_navigation/manager.py instead." % func.__name__,
+                      category=DeprecationWarning,
+                      stacklevel=2)
+        rospy.logwarn("Call to deprecated function {0} of topological_map. You should use functions from topological_navigation/manager.py instead.".format(func.__name__))
+        return func(*args, **kwargs)
+    newFunc.__name__ = func.__name__
+    newFunc.__doc__ = func.__doc__
+    newFunc.__dict__.update(func.__dict__)
+    return newFunc
 
 class topological_map(object):
 
@@ -32,6 +49,7 @@ class topological_map(object):
         return ind
 
 
+    @deprecated
     def update_node_waypoint(self, node_name, new_pose):
         msg_store = MessageStoreProxy(collection='topological_maps')
         query = {"name": node_name, "pointset": self.name}
@@ -48,7 +66,7 @@ class topological_map(object):
             rospy.logerr("Impossible to store in DB "+str(len(available))+" waypoints found after query")
             rospy.logerr("Available data: "+str(available))
 
-
+    @deprecated
     def update_node_vertex(self, node_name, vertex_index, vertex_pose):
         msg_store = MessageStoreProxy(collection='topological_maps')
         query = {"name": node_name, "pointset": self.name}
@@ -67,7 +85,7 @@ class topological_map(object):
             rospy.logerr("Impossible to store in DB "+str(len(available))+" waypoints found after query")
             rospy.logerr("Available data: "+str(available))
 
-
+    @deprecated
     def remove_edge(self, edge_name):
         #print 'removing edge: '+edge_name
         rospy.loginfo('Removing Edge: '+edge_name)
@@ -91,6 +109,7 @@ class topological_map(object):
             rospy.logerr("Impossible to store in DB "+str(len(available))+" waypoints found after query")
             rospy.logerr("Available data: "+str(available))
 
+    @deprecated
     def update_edge(self, node_name, edge_id, new_action=None, new_top_vel=None):
         msg_store = MessageStoreProxy(collection='topological_maps')
         # The query retrieves the node name with the given name from the given pointset.
@@ -114,6 +133,7 @@ class topological_map(object):
             rospy.logerr("Impossible to store in DB "+str(len(available))+" waypoints found after query")
             rospy.logerr("Available data: "+str(available))
 
+    @deprecated
     def update_node_name(self, node_name, new_name):
         msg_store = MessageStoreProxy(collection='topological_maps')
         # The query retrieves the node name with the given name from the given pointset.
@@ -160,6 +180,7 @@ class topological_map(object):
             rospy.logerr("Impossible to store in DB "+str(len(available))+" waypoints found after query")
             rospy.logerr("Available data: "+str(available))
 
+    @deprecated
     def add_edge(self, or_waypoint, de_waypoint, action):
         #print 'removing edge: '+edge_name
         rospy.loginfo('Adding Edge from '+or_waypoint+' to '+de_waypoint+' using '+action)
@@ -193,7 +214,7 @@ class topological_map(object):
             rospy.logerr("Impossible to store in DB "+str(len(available))+" waypoints found after query")
             rospy.logerr("Available data: "+str(available))
 
-
+    @deprecated
     def remove_node(self, node_name):
         rospy.loginfo('Removing Node: '+node_name)
         msg_store = MessageStoreProxy(collection='topological_maps')
@@ -230,7 +251,7 @@ class topological_map(object):
                 self.remove_edge(k)
             msg_store.delete(rm_id)
 
-
+    @deprecated
     def add_node(self, name, dist, pos, std_action):
         rospy.loginfo('Creating Node: '+name)
         msg_store = MessageStoreProxy(collection='topological_maps')
@@ -286,6 +307,7 @@ class topological_map(object):
         # need to reload the map when a node is added, for consistency
         self.loadMap(self.name)
 
+    @deprecated
     def delete_map(self):
 
         rospy.loginfo('Deleting map: '+self.name)
@@ -302,6 +324,7 @@ class topological_map(object):
         # need to reload the map when a node is deleted, for consistency
         self.loadMap(self.name)
 
+    @deprecated
     def map_from_msg(self, nodes):
         #self.topol_map = msg.pointset
         points = []
@@ -328,7 +351,7 @@ class topological_map(object):
 
         return points
 
-
+    @deprecated
     def loadMap(self, point_set):
         msg_store = MessageStoreProxy(collection='topological_maps')
 
