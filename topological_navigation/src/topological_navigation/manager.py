@@ -53,6 +53,8 @@ class map_manager(object):
         #This service adds a tag to the meta information of a list of nodes
         self.add_tag_srv=rospy.Service('/topological_map_manager/get_tags', strands_navigation_msgs.srv.GetTags, self.get_tags_cb)
         #This service adds a tag to the meta information of a list of nodes
+        self.add_tag_srv=rospy.Service('/topological_map_manager/get_node_tags', strands_navigation_msgs.srv.GetNodeTags, self.get_node_tags_cb)
+        #This service adds a tag to the meta information of a list of nodes
         self.add_tag_srv=rospy.Service('/topological_map_manager/add_tag_to_node', strands_navigation_msgs.srv.AddTag, self.add_tag_cb)
         #This service removes a tag from the meta information of a list of nodes
         self.add_tag_srv=rospy.Service('/topological_map_manager/rm_tag_from_node', strands_navigation_msgs.srv.AddTag, self.rm_tag_cb)        
@@ -85,6 +87,18 @@ class map_manager(object):
         tt.append(available)
         return tt
 
+    def get_node_tags_cb(self, req):
+        # msg_store = MessageStoreProxy(collection='topological_maps')
+        # query = {"_meta.tag": tag, "pointset": self.nodes.name}
+        # query_meta = {}
+        # query_meta["pointset"] = self.nodes.name
+        # query_meta["map"] = self.nodes.map
+
+        # #print query, query_meta
+        # available = msg_store.query(strands_navigation_msgs.msg.TopologicalNode._type, query, query_meta)
+        # #print len(available)
+        # for i in available:
+        #     nname= i[1]['node']
 
     def get_tagged_nodes(self, tag):
         mm=[]
@@ -370,6 +384,55 @@ class map_manager(object):
         msg_store.insert(node,meta)
         return True
 
+    def update_node_name(self, node_name, new_name):
+        msg_store = MessageStoreProxy(collection='topological_maps')
+        # The query retrieves the node name with the given name from the given pointset.
+        query = {"name": node_name, "pointset": self.name}
+        # The meta-information is some additional information about the specific
+        # map that we are interested in (?)
+        query_meta = {}
+        query_meta["pointset"] = self.name
+        query_meta["map"] = self.map
+        # This returns a tuple containing the object, if it exists, and some
+        # information about how it's stored in the database.
+        available = msg_store.query(TopologicalNode._type, query, query_meta)
+
+        if len(available) == 1:
+            available[0][0].name = new_name
+            # Also need to update all edges which involve the renamed node
+            allnodes_query = {"pointset": self.name}
+            allnodes_query_meta = {}
+            allnodes_query_meta["pointset"] = self.name
+            allnodes_query_meta["map"] = self.map
+            # this produces a list of tuples, each with [0] as the node, [1] as database info
+            allnodes_available = msg_store.query(TopologicalNode._type, {}, allnodes_query_meta)
+            
+            # Check the edges of each node for a reference to the node to be
+            # renamed, and change the edge id if there is one. Enumerate the
+            # values so that we can edit the objects in place to send them back
+            # to the database.
+            for node_ind, node_tpl in enumerate(allnodes_available):
+                for edge_ind, edge in enumerate(node_tpl[0].edges):
+                    # change names of the edges in other nodes, and update their values in the database
+                    if node_tpl[0].name != node_name and node_name in edge.edge_id:
+                        allnodes_available[node_ind][0].edges[edge_ind].edge_id = edge.edge_id.replace(node_name, new_name)
+                        # must also update the name of the node this edge goes to
+                        allnodes_available[node_ind][0].edges[edge_ind].node = new_name
+                        curnode_query = {"name": node_tpl[0].name, "pointset": self.name}
+                        msg_store.update(allnodes_available[node_ind][0], allnodes_query_meta, curnode_query, upsert=True)
+
+            # update all edge ids for this node
+            for edge_ind, edge in enumerate(available[0][0].edges):
+                available[0][0].edges[edge_ind].edge_id = edge.edge_id.replace(node_name, new_name)
+
+            msg_store.update(available[0][0], query_meta, query, upsert=True)
+            return True
+        else:
+            rospy.logerr("Impossible to store in DB "+str(len(available))+" waypoints found after query")
+            rospy.logerr("Available data: "+str(available))
+            return False
+
+
     def remove_node_cb(self, req):
         res = self.remove_node(req.name)
         return res
@@ -436,6 +499,30 @@ class map_manager(object):
             rospy.logerr("Impossible to store in DB "+str(len(available))+" waypoints found after query")
             rospy.logerr("Available data: "+str(available)) 
 
+    def update_edge(self, node_name, edge_id, new_action=None, new_top_vel=None):
+        msg_store = MessageStoreProxy(collection='topological_maps')
+        # The query retrieves the node name with the given name from the given pointset.
+        query = {"name": node_name, "pointset": self.name}
+        # The meta-information is some additional information about the specific
+        # map that we are interested in (?)
+        query_meta = {}
+        query_meta["pointset"] = self.name
+        query_meta["map"] = self.map
+        # This returns a tuple containing the object, if it exists, and some
+        # information about how it's stored in the database.
+        available = msg_store.query(TopologicalNode._type, query, query_meta)
+        if len(available) == 1:
+            for edge in available[0][0].edges:
+                if edge.edge_id == edge_id:
+                    edge.action = new_action or edge.action
+                    edge.top_vel = new_top_vel or edge.top_vel
+                
+            msg_store.update(available[0][0], query_meta, query, upsert=True)
+            return True
+        else:
+            rospy.logerr("Impossible to store in DB "+str(len(available))+" waypoints found after query")
+            rospy.logerr("Available data: "+str(available))
+            return False
 
 
     def get_edges_between(self, nodea, nodeb):

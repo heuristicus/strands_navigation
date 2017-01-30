@@ -46,7 +46,9 @@ add_service_files(
   AddTag.srv
   AskHelp.srv
   DelMonitorRecoveryPair.srv
+  ModifyTag.srv
   GetTags.srv
+  GetNodeTags.srv
   GetTaggedNodes.srv
   GetEdgesBetweenNodes.srv
   GetRouteBetween.srv
