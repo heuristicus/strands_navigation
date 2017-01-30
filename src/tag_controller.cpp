@@ -1,43 +1,38 @@
-#include "edge_controller.h"
-
+#include "tag_controller.h"
 
 namespace topological_rviz_tools
 {
-EdgeController::EdgeController(const QString& name,
-			       const std::vector<strands_navigation_msgs::Edge>& default_values,
-			       const QString& description,
-			       rviz::Property* parent,
-			       const char *changed_slot,
-			       QObject* receiver)
+TagController::TagController(const QString& name,
+			     const std::vector<std::string>& default_values,
+			     const QString& description,
+			     NodeProperty* parent,
+			     const char *changed_slot,
+			     QObject* receiver)
   : rviz::Property(name, "", description, parent, changed_slot, receiver)
 {
   for (int i = 0; i < default_values.size(); i++) {
-    // ROS_INFO("ADDING EDGE %s", default_values[i].edge_id.c_str());
-    EdgeProperty* newEdge = new EdgeProperty("Edge", default_values[i], "");
-    addChild(newEdge);
-    connect(newEdge, SIGNAL(edgeModified()), parent, SLOT(nodePropertyUpdated()));
+    TagProperty* newTag = new TagProperty("Tag", QString(QString::fromStdString(default_values[i])), "", QString::fromStdString(parent->getNodeName()));
+    addChild(newTag);
+    connect(newTag, SIGNAL(tagModified()), parent, SLOT(nodePropertyUpdated()));
   }
 }
 
-void EdgeController::initialize()
+void TagController::initialize()
 {
 
   std::stringstream ss;
   static int count = 0;
-  ss << "EdgeControllerCamera" << count++;
-
-  // Do subclass initialization.
-  onInitialize();
+  ss << "TagController" << count++;
 }
 
-EdgeController::~EdgeController()
+TagController::~TagController()
 {
   for (;numChildren() != 0;) {
     delete takeChildAt(0);
   }
 }
 
-QString EdgeController::formatClassId(const QString& class_id)
+QString TagController::formatClassId(const QString& class_id)
 {
   QStringList id_parts = class_id.split("/");
   if(id_parts.size() != 2)
@@ -53,12 +48,12 @@ QString EdgeController::formatClassId(const QString& class_id)
   }
 }
 
-void EdgeController::emitConfigChanged()
+void TagController::emitConfigChanged()
 {
   Q_EMIT configChanged();
 }
 
-void EdgeController::load(const rviz::Config& config)
+void TagController::load(const rviz::Config& config)
 {
   // // Load the name by hand.
   // QString name;
@@ -70,7 +65,7 @@ void EdgeController::load(const rviz::Config& config)
   // rviz::Property::load(config);
 }
 
-void EdgeController::save(rviz::Config config) const
+void TagController::save(rviz::Config config) const
 {
   // config.mapSetValue("Class", getClassId());
   // config.mapSetValue("Name", getName());

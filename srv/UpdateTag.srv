@@ -1,0 +1,15 @@
+# this service can be used to update or add tags to a node
+
+# if modifying the tag, the name of the tag before the modification should be
+# provided
+string prev_tag
+
+# this is what the tag should be changed to if modifying
+string modified_tag
+
+# If this is set, the other two fields ignored, and a new tag with this value is
+# added to the node's tags
+string new_tag
+---
+bool success
+string message

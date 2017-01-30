@@ -13,6 +13,7 @@ EdgeProperty::EdgeProperty(const QString& name,
   , edge_(default_value)
   , action_value_(default_value.action)
   , topvel_value_(default_value.top_vel)
+  , reset_value_(false)
 {
   ros::NodeHandle nh;
   edgeUpdate_ = nh.serviceClient<topological_rviz_tools::UpdateEdge>("/topmap_interface/update_edge", true);

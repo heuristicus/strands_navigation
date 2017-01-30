@@ -12,7 +12,7 @@
 
   <node pkg="map_server" name="map_server" type="map_server" args="$(arg map)"/>
 
-  <node pkg="topological_navigation" name="topological_map_manager" type="map_manager.py" args="$(arg topmap)"/>
+  <node pkg="topological_navigation" name="topological_map_manager" type="map_manager.py" args="$(arg topmap)" output="screen"/>
 
   <include file="$(find topological_utils)/launch/dummy_topological_navigation.launch">
     <arg name="map" value="$(arg topmap)"/>

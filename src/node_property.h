@@ -6,13 +6,17 @@
 #include "rviz/properties/string_property.h"
 #include "rviz/properties/float_property.h"
 #include "strands_navigation_msgs/TopologicalNode.h"
+#include "strands_navigation_msgs/GetNodeTags.h"
 #include "topological_rviz_tools/UpdateNodeName.h"
 #include "topological_rviz_tools/UpdateNodeTolerance.h"
 #include "pose_property.h"
 #include "edge_controller.h"
+#include "tag_controller.h"
 
 namespace topological_rviz_tools
 {
+
+class TagController;
 
 /** @brief Property specialized to provide getter for booleans. */
 class NodeProperty: public rviz::Property
@@ -27,6 +31,8 @@ public:
                QObject* receiver = 0);
 
   virtual ~NodeProperty();
+
+  std::string getNodeName() { return name_; }
 public Q_SLOTS:
   void updateYawTolerance();
   void updateXYTolerance();
@@ -59,6 +65,7 @@ private:
   bool reset_value_;
   PoseProperty* pose_;
   EdgeController* edge_controller_;
+  TagController* tag_controller_;
 };
 
 } // end namespace topological_rviz_tools

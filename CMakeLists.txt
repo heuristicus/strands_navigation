@@ -16,6 +16,7 @@ add_service_files(
   DeleteNode.srv
   AddEdge.srv
   UpdateEdge.srv
+  UpdateTag.srv
 )
 
 generate_messages(
@@ -62,6 +63,8 @@ set(SRC_FILES
   src/edge_property.cpp
   src/pose_property.cpp
   src/edge_controller.cpp
+  src/tag_controller.cpp
+  src/tag_property.cpp
 )
 
 ## An rviz plugin is just a shared library, so here we declare the

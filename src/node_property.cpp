@@ -44,6 +44,22 @@ NodeProperty::NodeProperty(const QString& name,
 					  " between its current position and the node's"
 					  " position is less than this value.",
 					  this, SLOT(updateXYTolerance()), this);
+
+  ros::ServiceClient tagService_ = nh.serviceClient<strands_navigation_msgs::GetNodeTags>("/topological_map_manager/get_node_tags", true);
+  strands_navigation_msgs::GetNodeTags srv;
+  srv.request.node_name = name_.c_str();
+  std::vector<std::string> node_tags;
+  if (tagService_.call(srv)) {
+    if (srv.response.success) {
+      node_tags = srv.response.tags;
+    } else {
+      ROS_WARN("Failed to get tags for node %s", name_.c_str());
+    }
+  } else {
+    ROS_WARN("Failed to get response from service to get tags for node %s", name_.c_str());
+  }
+  
+  tag_controller_ = new TagController("Tags", node_tags, "", this);
   pose_ = new PoseProperty("Pose", node_.pose, "", this);
   edge_controller_ = new EdgeController("Edges", node_.edges, "", this);
 }
