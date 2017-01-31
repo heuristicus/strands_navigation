@@ -68,6 +68,7 @@ add_service_files(
   LocalisePose.srv
   LoadTopoNavTestScenario.srv
   RunTopoNavTestScenario.srv
+  UpdateNodeName.srv
 )
 
 
