@@ -6,12 +6,16 @@
 #include "ros/ros.h"
 
 #include "rviz/properties/property_tree_widget.h"
+#include "std_msgs/Time.h"
 
 #include "topological_rviz_tools/DeleteNode.h"
+#include "strands_navigation_msgs/AddTag.h"
+#include "strands_navigation_msgs/RmvNode.h"
 
 class QComboBox;
 class QModelIndex;
 class QPushButton;
+class QInputDialog;
 
 namespace topological_rviz_tools {
 /**
@@ -48,10 +52,14 @@ public:
 
 private Q_SLOTS:
   void onDeleteClicked();
+  void onAddTagClicked();
   void renameSelected();
   void onCurrentChanged();
+  void updateTopMap();
 private:
   ros::ServiceClient delNodeSrv_;
+  ros::ServiceClient addTag_;
+  ros::Publisher update_map_;
   TopmapManager* topmap_man_;
   rviz::PropertyTreeWidget* properties_view_;
 };

@@ -7,8 +7,8 @@
 #include "rviz/properties/float_property.h"
 #include "strands_navigation_msgs/TopologicalNode.h"
 #include "strands_navigation_msgs/GetNodeTags.h"
-#include "topological_rviz_tools/UpdateNodeName.h"
-#include "topological_rviz_tools/UpdateNodeTolerance.h"
+#include "strands_navigation_msgs/UpdateNodeName.h"
+#include "strands_navigation_msgs/UpdateNodeTolerance.h"
 #include "pose_property.h"
 #include "edge_controller.h"
 #include "tag_controller.h"
@@ -33,6 +33,7 @@ public:
   virtual ~NodeProperty();
 
   std::string getNodeName() { return name_; }
+  TagController* getTagController() { return tag_controller_; }
 public Q_SLOTS:
   void updateYawTolerance();
   void updateXYTolerance();

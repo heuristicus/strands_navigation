@@ -4,7 +4,6 @@
 #include "ros/ros.h"
 #include "rviz/properties/property.h"
 #include "rviz/properties/string_property.h"
-#include "strands_navigation_msgs/AddTag.h"
 #include "strands_navigation_msgs/ModifyTag.h"
 
 namespace topological_rviz_tools
@@ -32,7 +31,6 @@ public Q_SLOTS:
 Q_SIGNALS:
   void tagModified();
 private:
-  ros::ServiceClient tagAdd_;
   ros::ServiceClient tagUpdate_;
   std::string tag_value_; // keep value so it's not lost if we fail to update
   bool reset_value_;

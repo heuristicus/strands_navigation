@@ -17,8 +17,7 @@ TagProperty::TagProperty(const QString& name,
 {
   connect(this, SIGNAL(changed()), this, SLOT(updateTag()));
   ros::NodeHandle nh;
-  tagAdd_ = nh.serviceClient<strands_navigation_msgs::AddTag>("/topological_map_manager/add_tag", true);
-  tagUpdate_ = nh.serviceClient<strands_navigation_msgs::ModifyTag>("/topological_map_manager/modify_tag", true);
+  tagUpdate_ = nh.serviceClient<strands_navigation_msgs::ModifyTag>("/topological_map_manager/modify_node_tags", true);
 }
 
 void TagProperty::updateTag(){
@@ -44,27 +43,6 @@ void TagProperty::updateTag(){
     }
   } else {
     ROS_WARN("Failed to get response from service to update tag %s", srv.request.tag.c_str());
-    reset_value_ = true;
-    setValue(QString::fromStdString(tag_value_));
-  }
-}
-
-void TagProperty::addTag(const QString& tag){
-  strands_navigation_msgs::AddTag srv;
-  srv.request.tag = tag.toStdString().c_str();
-  
-  if (tagUpdate_.call(srv)) {
-    if (srv.response.success) {
-      ROS_INFO("Successfully added tag %s", srv.request.tag.c_str());
-      Q_EMIT tagModified();
-      tag_value_ = getString().toStdString();
-    } else {
-      ROS_INFO("Failed to add tag %s: %s", srv.request.tag.c_str(), srv.response.meta.c_str());
-      reset_value_ = true;
-      setValue(QString::fromStdString(tag_value_));
-    }
-  } else {
-    ROS_WARN("Failed to get response from service to add tag %s", srv.request.tag.c_str());
     reset_value_ = true;
     setValue(QString::fromStdString(tag_value_));
   }

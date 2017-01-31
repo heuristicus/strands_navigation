@@ -22,8 +22,8 @@ NodeProperty::NodeProperty(const QString& name,
   connect(this, SIGNAL(changed()), this, SLOT(updateNodeName()));
 
   ros::NodeHandle nh;
-  nameUpdate_ = nh.serviceClient<topological_rviz_tools::UpdateNodeName>("/topmap_interface/update_node_name", true);
-  toleranceUpdate_ = nh.serviceClient<topological_rviz_tools::UpdateNodeTolerance>("/topmap_interface/update_node_tolerance", true);
+  nameUpdate_ = nh.serviceClient<strands_navigation_msgs::UpdateNodeName>("/topological_map_manager/update_node_name", true);
+  toleranceUpdate_ = nh.serviceClient<strands_navigation_msgs::UpdateNodeTolerance>("/topological_map_manager/update_node_tolerance", true);
 
   map_ = new rviz::StringProperty("Map", node_.map.c_str(), "", this);
   map_->setReadOnly(true);
