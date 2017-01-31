@@ -58,8 +58,11 @@ NodeProperty::NodeProperty(const QString& name,
   } else {
     ROS_WARN("Failed to get response from service to get tags for node %s", name_.c_str());
   }
-  
   tag_controller_ = new TagController("Tags", node_tags, "", this);
+  if (node_tags.size() == 0) {
+    tag_controller_->setHidden(true);
+  }
+
   pose_ = new PoseProperty("Pose", node_.pose, "", this);
   edge_controller_ = new EdgeController("Edges", node_.edges, "", this);
 }
