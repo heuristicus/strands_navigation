@@ -88,17 +88,29 @@ class map_manager(object):
         return tt
 
     def get_node_tags_cb(self, req):
-        # msg_store = MessageStoreProxy(collection='topological_maps')
-        # query = {"_meta.tag": tag, "pointset": self.nodes.name}
-        # query_meta = {}
-        # query_meta["pointset"] = self.nodes.name
-        # query_meta["map"] = self.nodes.map
+        #rospy.loginfo('Adding Tag '+msg.tag+' to '+str(msg.node))
+        succeded = True
+        msg_store = MessageStoreProxy(collection='topological_maps')
+        query = {"name" : req.node_name, "pointset": self.nodes.name}
+        query_meta = {}
+        query_meta["pointset"] = self.nodes.name
+        query_meta["map"] = self.nodes.map
 
-        # #print query, query_meta
-        # available = msg_store.query(strands_navigation_msgs.msg.TopologicalNode._type, query, query_meta)
-        # #print len(available)
-        # for i in available:
-        #     nname= i[1]['node']
+        #print query, query_meta
+        available = msg_store.query(strands_navigation_msgs.msg.TopologicalNode._type, query, query_meta)
+        #print len(available)
+        if len(available) == 1:
+            # The meta information for a node is in the second part of the tuple
+            # returned by the message store query
+            if 'tag' in available[0][1]:
+                meta_out = available[0][1]['tag']
+            else:
+                meta_out = []
+        else:
+             succeded = False
+             meta_out = []
+
+        return succeded, meta_out
 
     def get_tagged_nodes(self, tag):
         mm=[]
