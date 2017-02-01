@@ -3,12 +3,16 @@
 
 #include "rviz/panel.h"
 #include "topmap_manager.h"
+#include "tag_property.h"
+#include "edge_property.h"
+#include "node_property.h"
 #include "ros/ros.h"
 
 #include "rviz/properties/property_tree_widget.h"
 #include "std_msgs/Time.h"
 
 #include "strands_navigation_msgs/AddTag.h"
+#include "strands_navigation_msgs/AddEdge.h"
 #include "strands_navigation_msgs/RmvNode.h"
 
 class QComboBox;
@@ -57,8 +61,11 @@ private Q_SLOTS:
   void updateTopMap();
 private:
   ros::ServiceClient delNodeSrv_;
-  ros::ServiceClient addTag_;
+  ros::ServiceClient delTagSrv_;
+  ros::ServiceClient delEdgeSrv_;
+  ros::ServiceClient addTagSrv_;
   ros::Publisher update_map_;
+
   TopmapManager* topmap_man_;
   rviz::PropertyTreeWidget* properties_view_;
 };

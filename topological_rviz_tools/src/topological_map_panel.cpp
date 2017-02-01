@@ -18,7 +18,9 @@ TopologicalMapPanel::TopologicalMapPanel(QWidget* parent)
 
   ros::NodeHandle nh;
   delNodeSrv_ = nh.serviceClient<strands_navigation_msgs::RmvNode>("/topological_map_manager/remove_topological_node", true);
-  addTag_ = nh.serviceClient<strands_navigation_msgs::AddTag>("/topological_map_manager/add_tag_to_node", true);
+  addTagSrv_ = nh.serviceClient<strands_navigation_msgs::AddTag>("/topological_map_manager/add_tag_to_node", true);
+  delTagSrv_ = nh.serviceClient<strands_navigation_msgs::AddTag>("/topological_map_manager/rm_tag_from_node", true);
+  delEdgeSrv_ = nh.serviceClient<strands_navigation_msgs::AddEdge>("/topological_map_manager/remove_edge", true);
   update_map_ = nh.advertise<std_msgs::Time>("/update_map", 5);
 
   QPushButton* add_tag_button = new QPushButton("Add tag");
@@ -64,18 +66,18 @@ void TopologicalMapPanel::setTopmapManager(TopmapManager* topmap_man)
 void TopologicalMapPanel::onDeleteClicked()
 {
   QList<NodeProperty*> nodes_to_delete = properties_view_->getSelectedObjects<NodeProperty>();
+  QList<TagProperty*> tags_to_delete = properties_view_->getSelectedObjects<TagProperty>();
+  QList<EdgeProperty*> edges_to_delete = properties_view_->getSelectedObjects<EdgeProperty>();
+
   NodeController* controller = topmap_man_->getController();
   
-  for(int i = 0; i < nodes_to_delete.size(); i++)
-  {
+  for(int i = 0; i < nodes_to_delete.size(); i++) {
     strands_navigation_msgs::RmvNode srv;
     srv.request.name = nodes_to_delete[i]->getValue().toString().toStdString().c_str();
     
     if (delNodeSrv_.call(srv)) {
       if (srv.response.success) {
-	delete controller->takeChild(nodes_to_delete[i]);
 	ROS_INFO("Successfully removed node %s", srv.request.name.c_str());
-	updateTopMap();
       } else {
 	ROS_INFO("Failed to remove node %s", srv.request.name.c_str());
       }
@@ -83,6 +85,51 @@ void TopologicalMapPanel::onDeleteClicked()
       ROS_INFO("Failed to get response from server to remove node %s", srv.request.name.c_str());
     }
   }
+
+  for(int i = 0; i < tags_to_delete.size(); i++) {
+    strands_navigation_msgs::AddTag srv;
+    srv.request.tag = tags_to_delete[i]->getString().toStdString().c_str();
+    // go over all nodes in the controller and see which one this tag is from so
+    // we can extract the node name
+    std::string node_name;
+    for (int nd; nd < controller->numChildren(); nd++) {
+      if (controller->childAt(nd)->isAncestorOf(tags_to_delete[i])){
+	srv.request.node.push_back(controller->childAt(nd)->getValue().toString().toStdString());
+	break;
+      }
+    }
+
+    if (delTagSrv_.call(srv)) {
+      if (srv.response.success) {
+	ROS_INFO("Successfully removed tag %s from node %s", srv.request.tag.c_str(), srv.request.node[0].c_str());
+      } else {
+	ROS_INFO("Failed to remove tag %s from node %s", srv.request.tag.c_str(), srv.request.node[0].c_str());
+      }
+    } else {
+      ROS_INFO("Failed to get response from server to remove tag %s from node %s", srv.request.tag.c_str(), srv.request.node[0].c_str());
+    }
+  }
+
+  for(int i = 0; i < edges_to_delete.size(); i++) {
+    strands_navigation_msgs::AddEdge srv;
+    srv.request.edge_id = edges_to_delete[i]->getEdgeId().c_str();
+
+    if (delEdgeSrv_.call(srv)) {
+      if (srv.response.success) {
+	ROS_INFO("Successfully removed edge %s", srv.request.edge_id.c_str());
+
+      } else {
+	ROS_INFO("Failed to remove edge %s", srv.request.edge_id.c_str());
+      }
+    } else {
+      ROS_INFO("Failed to get response from server to remove edge %s", srv.request.edge_id.c_str());
+    }
+  }
+
+  // Update topological map only once after we remove all the stuff, to prevent
+  // update spam.
+  updateTopMap();
+
 }
 
 void TopologicalMapPanel::onAddTagClicked()
@@ -92,6 +139,10 @@ void TopologicalMapPanel::onAddTagClicked()
   QString tag = QInputDialog::getText(this, tr("Add tag"),
 				      tr("Tag to add:"));
   
+  if (tag.toStdString().empty()){
+    return;
+  }
+
   strands_navigation_msgs::AddTag srv;
   srv.request.tag = tag.toStdString().c_str();
 
@@ -103,7 +154,7 @@ void TopologicalMapPanel::onAddTagClicked()
     }
   }
 
-  if (addTag_.call(srv)) {
+  if (addTagSrv_.call(srv)) {
     if (srv.response.success) {
       ROS_INFO("Successfully added tag \"%s\" to %d nodes", srv.request.tag.c_str(), nodes.size());
       updateTopMap();

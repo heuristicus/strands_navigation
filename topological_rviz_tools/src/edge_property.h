@@ -24,6 +24,8 @@ public:
                QObject* receiver = 0);
 
   virtual ~EdgeProperty();
+
+  std::string getEdgeId() { return edge_id_->getString().toStdString(); }
 public Q_SLOTS:
   void updateAction();
   void updateTopvel();
