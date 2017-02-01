@@ -67,6 +67,7 @@ void TopmapEdgeTool::onInitialize()
   ros::NodeHandle nh;
   addEdgeSrv_ = nh.serviceClient<topological_rviz_tools::AddEdge>("/topmap_interface/add_edge", true);
   markerPub_ = nh.advertise<visualization_msgs::Marker>("edge_tool_marker", 0);
+  update_map_ = nh.advertise<std_msgs::Time>("/update_map", 5);
 }
 
 // Activation and deactivation
@@ -145,6 +146,9 @@ int TopmapEdgeTool::processMouseEvent(rviz::ViewportMouseEvent& event)
 	if (addEdgeSrv_.call(srv)){
 	  if (srv.response.success) {
 	    ROS_INFO("Successfully added edge: %s", srv.response.message.c_str());
+	    std_msgs::Time t;
+	    t.data = ros::Time::now();
+	    update_map_.publish(t);
 	  } else {
 	    ROS_INFO("Failed to add edge: %s", srv.response.message.c_str());
 	  }

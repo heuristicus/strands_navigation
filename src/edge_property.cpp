@@ -16,7 +16,7 @@ EdgeProperty::EdgeProperty(const QString& name,
   , reset_value_(false)
 {
   ros::NodeHandle nh;
-  edgeUpdate_ = nh.serviceClient<topological_rviz_tools::UpdateEdge>("/topmap_interface/update_edge", true);
+  edgeUpdate_ = nh.serviceClient<strands_navigation_msgs::UpdateEdge>("/topological_map_manager/update_edge", true);
   setReadOnly(true);
   edge_id_ = new rviz::StringProperty("Edge ID", edge_.edge_id.c_str(), "", this);
   edge_id_->setReadOnly(true);
@@ -36,7 +36,7 @@ void EdgeProperty::updateTopvel(){
     return;
   }
 
-  topological_rviz_tools::UpdateEdge srv;
+  strands_navigation_msgs::UpdateEdge srv;
   srv.request.edge_id = edge_id_->getStdString().c_str();
   srv.request.top_vel = top_vel_->getFloat();
   
@@ -64,7 +64,7 @@ void EdgeProperty::updateAction(){
     return;
   }
 
-  topological_rviz_tools::UpdateEdge srv;
+  strands_navigation_msgs::UpdateEdge srv;
   srv.request.edge_id = edge_id_->getStdString().c_str();
   srv.request.action = action_->getStdString().c_str();
   

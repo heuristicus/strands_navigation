@@ -4,7 +4,8 @@
 #include <ros/ros.h>
 #include <rviz/tool.h>
 #include "geometry_msgs/Pose.h"
-#include "topological_rviz_tools/AddNode.h"
+#include "std_msgs/Time.h"
+#include "strands_navigation_msgs/AddNode.h"
 
 namespace rviz
 {
@@ -35,6 +36,7 @@ public:
   virtual int processMouseEvent(rviz::ViewportMouseEvent& event);
 private:
   ros::ServiceClient addNodeSrv_;
+  ros::Publisher update_map_;
 };
 } // end namespace topological_rviz_tools
 

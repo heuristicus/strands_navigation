@@ -6,7 +6,7 @@
 #include "rviz/properties/string_property.h"
 #include "rviz/properties/float_property.h"
 #include "strands_navigation_msgs/Edge.h"
-#include "topological_rviz_tools/UpdateEdge.h"
+#include "strands_navigation_msgs/UpdateEdge.h"
 
 namespace topological_rviz_tools
 {

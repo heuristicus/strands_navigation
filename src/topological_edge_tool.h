@@ -6,6 +6,7 @@
 #include <visualization_msgs/Marker.h>
 #include <geometry_msgs/Pose.h>
 #include "topological_rviz_tools/AddEdge.h"
+#include "std_msgs/Time.h"
 
 namespace rviz
 {
@@ -36,10 +37,12 @@ public:
   virtual int processMouseEvent(rviz::ViewportMouseEvent& event);
 private:
   ros::Publisher markerPub_;
+  ros::Publisher update_map_;
   ros::ServiceClient addEdgeSrv_;
   bool noClick_; // true if nothing clicked yet
   geometry_msgs::Pose firstClick_;
   visualization_msgs::Marker edgeMarker_;
+
 };
 } // end namespace topological_rviz_tools
 

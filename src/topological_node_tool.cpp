@@ -51,7 +51,8 @@ TopmapNodeTool::~TopmapNodeTool()
 void TopmapNodeTool::onInitialize()
 {
   ros::NodeHandle nh;
-  addNodeSrv_ = nh.serviceClient<topological_rviz_tools::AddNode>("/topmap_interface/add_node", true);
+  addNodeSrv_ = nh.serviceClient<strands_navigation_msgs::AddNode>("/topological_map_manager/add_topological_node", true);
+  update_map_ = nh.advertise<std_msgs::Time>("/update_map", 5);
 }
 
 // Activation and deactivation
@@ -92,17 +93,20 @@ int TopmapNodeTool::processMouseEvent(rviz::ViewportMouseEvent& event)
       clicked.position.z = intersection.z;
       // On the second click, send the edge to the service to be added to the
       // map, and then reset the poses.
-      topological_rviz_tools::AddNode srv;
+      strands_navigation_msgs::AddNode srv;
       srv.request.pose = clicked;
 
       if (addNodeSrv_.call(srv)){
 	if (srv.response.success) {
-	  ROS_INFO("Successfully added node: %s", srv.response.message.c_str());
+	  ROS_INFO("Successfully added node");
+	  std_msgs::Time t;
+	  t.data = ros::Time::now();
+	  update_map_.publish(t);
 	} else {
-	  ROS_INFO("Failed to add node: %s", srv.response.message.c_str());
+	  ROS_INFO("Failed to add node");
 	}
       } else {
-	ROS_WARN("Failed to add node: %s", srv.response.message.c_str());
+	ROS_WARN("Failed to connect to add node service");
       }
       return Render | Finished;
     }

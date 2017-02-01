@@ -9,14 +9,7 @@ find_package(catkin REQUIRED COMPONENTS message_generation rviz roscpp strands_n
 
 add_service_files(
   FILES
-  UpdateNodeTolerance.srv
-  UpdateNodeName.srv
-  UpdateNodePose.srv
-  AddNode.srv
-  DeleteNode.srv
   AddEdge.srv
-  UpdateEdge.srv
-  UpdateTag.srv
 )
 
 generate_messages(

@@ -8,7 +8,6 @@
 #include "rviz/properties/property_tree_widget.h"
 #include "std_msgs/Time.h"
 
-#include "topological_rviz_tools/DeleteNode.h"
 #include "strands_navigation_msgs/AddTag.h"
 #include "strands_navigation_msgs/RmvNode.h"
 

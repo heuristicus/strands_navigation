@@ -18,7 +18,9 @@ PoseProperty::PoseProperty(const QString& name,
   setReadOnly(true); // can't change the name of this pose
 
   ros::NodeHandle nh;
-  poseUpdate_ = nh.serviceClient<topological_rviz_tools::UpdateNodePose>("/topmap_interface/update_node_pose", true);
+  // Use addnode because it has the fields we need, so we don't have to write a
+  // new message
+  poseUpdate_ = nh.serviceClient<strands_navigation_msgs::AddNode>("/topological_map_manager/update_node_pose", true);
 
   orientation_ = new rviz::StringProperty("Orientation", "", "", this);
   orientation_w_ = new rviz::FloatProperty("w", pose_.orientation.w, "",  orientation_);
@@ -58,21 +60,21 @@ PoseProperty::~PoseProperty()
 
 void PoseProperty::positionUpdated()
 {
-  topological_rviz_tools::UpdateNodePose srv;
-  srv.request.node_name = getParent()->getValue().toString().toStdString().c_str();
-  srv.request.new_pose.position.x = position_x_->getFloat();
-  srv.request.new_pose.position.y = position_y_->getFloat();
-  srv.request.new_pose.position.z = position_z_->getFloat();
-  srv.request.new_pose.orientation.x = orientation_x_->getFloat();
-  srv.request.new_pose.orientation.y = orientation_y_->getFloat();
-  srv.request.new_pose.orientation.z = orientation_z_->getFloat();
-  srv.request.new_pose.orientation.w = orientation_w_->getFloat();
+  strands_navigation_msgs::AddNode srv;
+  srv.request.name = getParent()->getValue().toString().toStdString().c_str();
+  srv.request.pose.position.x = position_x_->getFloat();
+  srv.request.pose.position.y = position_y_->getFloat();
+  srv.request.pose.position.z = position_z_->getFloat();
+  srv.request.pose.orientation.x = orientation_x_->getFloat();
+  srv.request.pose.orientation.y = orientation_y_->getFloat();
+  srv.request.pose.orientation.z = orientation_z_->getFloat();
+  srv.request.pose.orientation.w = orientation_w_->getFloat();
   
   if (poseUpdate_.call(srv)) {
-    ROS_INFO("Successfully updated pose for node %s", srv.request.node_name.c_str());
+    ROS_INFO("Successfully updated pose for node %s", srv.request.name.c_str());
     Q_EMIT poseModified();
   } else {
-    ROS_WARN("Failed to update pose for node %s", srv.request.node_name.c_str());
+    ROS_WARN("Failed to update pose for node %s", srv.request.name.c_str());
   }
 }
 

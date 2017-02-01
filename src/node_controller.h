@@ -64,6 +64,7 @@ public:
 
 Q_SIGNALS:
   void configChanged();
+  void childModified();
 
 private Q_SLOTS:
   void updateModifiedNode(Property* node);
@@ -74,14 +75,14 @@ protected:
    * Default implementation does nothing. */
   virtual void onInitialize() {}
 
-  void setModifiedChild(rviz::Property* modifiedChild){ modifiedChild_ = modifiedChild; }
+  void addModifiedChild(rviz::Property* modifiedChild){ modifiedChildren_.push_back(modifiedChild); }
 
 private:
   void topmapCallback(const strands_navigation_msgs::TopologicalMap::ConstPtr& msg);
 
   QString class_id_;
   ros::Subscriber top_sub_;
-  rviz::Property* modifiedChild_;
+  std::vector<rviz::Property*> modifiedChildren_;
 };
 
 } // end namespace topological_rviz_tools

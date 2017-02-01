@@ -83,7 +83,7 @@ void NodeProperty::updateYawTolerance(){
     return;
   }
 
-  topological_rviz_tools::UpdateNodeTolerance srv;
+  strands_navigation_msgs::UpdateNodeTolerance srv;
   srv.request.node_name = name_;
   srv.request.update_yaw = true;
   srv.request.yaw_tolerance = yaw_tolerance_->getFloat();
@@ -111,7 +111,7 @@ void NodeProperty::updateXYTolerance(){
     return;
   }
 
-  topological_rviz_tools::UpdateNodeTolerance srv;
+  strands_navigation_msgs::UpdateNodeTolerance srv;
   srv.request.node_name = name_;
   srv.request.update_xy = true;
   srv.request.xy_tolerance = xy_tolerance_->getFloat();
@@ -139,7 +139,7 @@ void NodeProperty::updateNodeName(){
     return;
   }
 
-  topological_rviz_tools::UpdateNodeName srv;
+  strands_navigation_msgs::UpdateNodeName srv;
   srv.request.node_name = name_;
   srv.request.new_name = this->getValue().toString().toStdString().c_str();
   

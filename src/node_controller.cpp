@@ -5,7 +5,6 @@ namespace topological_rviz_tools
 {
 NodeController::NodeController()
   : rviz::Property()
-  , modifiedChild_(NULL)
 {
   ros::NodeHandle nh_;
   top_sub_ = nh_.subscribe("/topological_map", 1, &NodeController::topmapCallback, this);
@@ -29,8 +28,8 @@ NodeController::~NodeController()
 void NodeController::topmapCallback(const strands_navigation_msgs::TopologicalMap::ConstPtr& msg){
   ROS_INFO("Updating topological map");
   // If we're the ones who made the change, then we only replace the property
-  // for the specific node that we changed, otherwise replace everything.
-  if (modifiedChild_ == NULL) {
+  // for the specific nodes that we changed, otherwise replace everything.
+  if (modifiedChildren_.size() == 0) {
     // Use takechildat to remove, because removeChildren doesn't change the
     // child states, and can cause issues when the new properties are added.
     for (;numChildren() != 0;) {
@@ -42,25 +41,28 @@ void NodeController::topmapCallback(const strands_navigation_msgs::TopologicalMa
       connect(newProp, SIGNAL(nodeModified(Property*)), this, SLOT(updateModifiedNode(Property*)));
     }
   } else {
-    std::string nodeName = modifiedChild_->getValue().toString().toStdString();
-    // remove only the modified child from the child list
-    delete takeChild(modifiedChild_);
-    modifiedChild_ = NULL;
-    for (int i = 0; i < msg->nodes.size(); i++) {
-      if (std::string(msg->nodes[i].name).compare(nodeName) == 0) {
-	// ROS_INFO("Adding node with name %s, which matches %s", msg->nodes[i].name.c_str(), nodeName.c_str());
-	NodeProperty* newProp = new NodeProperty("Node", msg->nodes[i], "");
-	addChild(newProp, i);
-	connect(newProp, SIGNAL(nodeModified(Property*)), this, SLOT(updateModifiedNode(Property*)));
-	break;
+    for (int msg_ind = 0; msg_ind < msg->nodes.size(); msg_ind++) {
+      // could reduce checks here by removing children, but probably not worth the trouble
+      for (int mod_ind = 0; mod_ind < modifiedChildren_.size(); mod_ind++) {
+	if (std::string(msg->nodes[msg_ind].name).compare(modifiedChildren_[mod_ind]->getValue().toString().toStdString().c_str()) == 0) {
+	  // remove only the modified child from the child list
+	  delete takeChild(modifiedChildren_[mod_ind]);
+
+	  // ROS_INFO("Adding node with name %s, which matches %s", msg->nodes[i].name.c_str(), nodeName.c_str());
+	  NodeProperty* newProp = new NodeProperty("Node", msg->nodes[msg_ind], "");
+	  addChild(newProp, msg_ind);
+	  connect(newProp, SIGNAL(nodeModified(Property*)), this, SLOT(updateModifiedNode(Property*)));
+	}
       }
     }
+    modifiedChildren_.clear();
   }
 }
 
 void NodeController::updateModifiedNode(Property* node){
   ROS_INFO("Child was modified: %s", node->getValue().toString().toStdString().c_str());
-  modifiedChild_ = node;
+  modifiedChildren_.push_back(node);
+  Q_EMIT childModified();
 }
 
 QString NodeController::formatClassId(const QString& class_id)
