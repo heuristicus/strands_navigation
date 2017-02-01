@@ -69,6 +69,7 @@ class map_manager(object):
         #adds edge between two nodes
         self.add_edges_srv=rospy.Service('/topological_map_manager/add_edges_between_nodes', strands_navigation_msgs.srv.AddEdge, self.add_edge_cb)
         self.update_edge_srv=rospy.Service('/topological_map_manager/update_edge', strands_navigation_msgs.srv.UpdateEdge, self.update_edge)
+        self.remove_edge_srv=rospy.Service('/topological_map_manager/remove_edge', strands_navigation_msgs.srv.AddEdge, self.remove_edge_cb)
 
     def updateCallback(self, msg) :
 #        if msg.data > self.last_updated :
@@ -539,6 +540,9 @@ class map_manager(object):
             return False
 
 
+    def remove_edge_cb(self, req):
+        return self.remove_edge(req.edge_id)
+
     def remove_edge(self, edge_name) :
         #print 'removing edge: '+edge_name
         rospy.loginfo('Removing Edge: '+edge_name)
@@ -556,9 +560,11 @@ class map_manager(object):
                     if j.edge_id == edge_name :
                         i[0].edges.remove(j)
                         msg_store.update(i[0], query_meta, query, upsert=True)
+            return True
         else :
             rospy.logerr("Impossible to store in DB "+str(len(available))+" waypoints found after query")
             rospy.logerr("Available data: "+str(available)) 
+            return False
 
     def update_edge(self, req):
         msg_store = MessageStoreProxy(collection='topological_maps')
