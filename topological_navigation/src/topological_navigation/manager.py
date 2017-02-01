@@ -437,7 +437,7 @@ class map_manager(object):
         # map that we are interested in (?)
         query_meta = {}
         query_meta["pointset"] = self.name
-        query_meta["map"] = self.map
+        query_meta["map"] = self.nodes.map
         # This returns a tuple containing the object, if it exists, and some
         # information about how it's stored in the database.
         available = msg_store.query(TopologicalNode._type, query, query_meta)
@@ -448,7 +448,7 @@ class map_manager(object):
             allnodes_query = {"pointset": self.name}
             allnodes_query_meta = {}
             allnodes_query_meta["pointset"] = self.name
-            allnodes_query_meta["map"] = self.map
+            allnodes_query_meta["map"] = self.nodes.map
             # this produces a list of tuples, each with [0] as the node, [1] as database info
             allnodes_available = msg_store.query(TopologicalNode._type, {}, allnodes_query_meta)
 
@@ -482,7 +482,7 @@ class map_manager(object):
         query = {"name": req.name, "pointset": self.name}
         query_meta = {}
         query_meta["pointset"] = self.name
-        query_meta["map"] = self.map
+        query_meta["map"] = self.nodes.map
         available = msg_store.query(TopologicalNode._type, query, query_meta)
         if len(available) == 1:
             positionZ=available[0][0].pose.position.z
@@ -568,15 +568,15 @@ class map_manager(object):
         # map that we are interested in (?)
         query_meta = {}
         query_meta["pointset"] = self.name
-        query_meta["map"] = self.map
+        query_meta["map"] = self.nodes.map
         # This returns a tuple containing the object, if it exists, and some
         # information about how it's stored in the database.
         available = msg_store.query(TopologicalNode._type, query, query_meta)
         if len(available) == 1:
             for edge in available[0][0].edges:
                 if edge.edge_id == req.edge_id:
-                    edge.action = req.new_action or edge.action
-                    edge.top_vel = req.new_top_vel or edge.top_vel
+                    edge.action = req.action or edge.action
+                    edge.top_vel = req.top_vel or edge.top_vel
 
             msg_store.update(available[0][0], query_meta, query, upsert=True)
             return True, ""
@@ -610,7 +610,7 @@ class map_manager(object):
         points = strands_navigation_msgs.msg.TopologicalMap()
         points.name = point_set
         points.pointset = point_set
-        
+
         query_meta = {}
         query_meta["pointset"] = point_set
 

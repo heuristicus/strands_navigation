@@ -69,6 +69,8 @@ add_service_files(
   LoadTopoNavTestScenario.srv
   RunTopoNavTestScenario.srv
   UpdateNodeName.srv
+  UpdateEdge.srv
+  UpdateNodeTolerance.srv
 )
 
 
