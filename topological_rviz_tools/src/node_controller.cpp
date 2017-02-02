@@ -27,6 +27,14 @@ NodeController::~NodeController()
 
 void NodeController::topmapCallback(const strands_navigation_msgs::TopologicalMap::ConstPtr& msg){
   ROS_INFO("Updating topological map");
+  
+  // deep copy (because of const), and then sort the array so we display in
+  // alphabetical order of node names
+  std::vector<strands_navigation_msgs::TopologicalNode> nodes = msg->nodes;
+  std::sort(nodes.begin(), nodes.end(), nodeSort);
+
+  ROS_INFO("%s", nodes[nodes.size()-1].name.c_str());
+
   // If we're the ones who made the change, then we only replace the property
   // for the specific nodes that we changed, otherwise replace everything.
   if (modifiedChildren_.size() == 0) {
@@ -35,25 +43,31 @@ void NodeController::topmapCallback(const strands_navigation_msgs::TopologicalMa
     for (;numChildren() != 0;) {
       delete takeChildAt(0);
     }
-    for (int i = 0; i < msg->nodes.size(); i++) {
-      NodeProperty* newProp = new NodeProperty("Node", msg->nodes[i], "");
+    
+    for (int i = 0; i < nodes.size(); i++) {
+      NodeProperty* newProp = new NodeProperty("Node", nodes[i], "");
       addChild(newProp);
       connect(newProp, SIGNAL(nodeModified(Property*)), this, SLOT(updateModifiedNode(Property*)));
     }
   } else {
-    for (int msg_ind = 0; msg_ind < msg->nodes.size(); msg_ind++) {
+    std::vector<std::pair<int, int> > toDelete;
+    for (int msg_ind = 0; msg_ind < nodes.size(); msg_ind++) {
       // could reduce checks here by removing children, but probably not worth the trouble
       for (int mod_ind = 0; mod_ind < modifiedChildren_.size(); mod_ind++) {
-	if (std::string(msg->nodes[msg_ind].name).compare(modifiedChildren_[mod_ind]->getValue().toString().toStdString().c_str()) == 0) {
-	  // remove only the modified child from the child list
-	  delete takeChild(modifiedChildren_[mod_ind]);
-
-	  // ROS_INFO("Adding node with name %s, which matches %s", msg->nodes[i].name.c_str(), nodeName.c_str());
-	  NodeProperty* newProp = new NodeProperty("Node", msg->nodes[msg_ind], "");
-	  addChild(newProp, msg_ind);
-	  connect(newProp, SIGNAL(nodeModified(Property*)), this, SLOT(updateModifiedNode(Property*)));
+	if (std::string(nodes[msg_ind].name).compare(modifiedChildren_[mod_ind]->getValue().toString().toStdString().c_str()) == 0) {
+	  toDelete.push_back(std::make_pair(mod_ind, msg_ind));
 	}
       }
+    }
+
+    for (int i = 0; i < toDelete.size(); i++) {
+      // remove only the modified child from the child list
+      delete takeChild(modifiedChildren_[toDelete[i].first]);
+
+      // ROS_INFO("Adding node with name %s, which matches %s", msg->nodes[i].name.c_str(), nodeName.c_str());
+      NodeProperty* newProp = new NodeProperty("Node", nodes[toDelete[i].second], "");
+      addChild(newProp, toDelete[i].second);
+      connect(newProp, SIGNAL(nodeModified(Property*)), this, SLOT(updateModifiedNode(Property*)));
     }
     modifiedChildren_.clear();
   }

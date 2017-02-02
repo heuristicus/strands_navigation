@@ -1,7 +1,9 @@
 #ifndef TOPMAP_NODE_CONTROLLER_H
 #define TOPMAP_NODE_CONTROLLER_H
 
+#include <algorithm>
 #include <string>
+#include <utility>
 
 #include <QCursor>
 #include <QColor>
@@ -25,6 +27,7 @@
 #include "rviz/window_manager_interface.h"
 
 #include "strands_navigation_msgs/TopologicalMap.h"
+#include "strands_navigation_msgs/TopologicalNode.h"
 
 #include "node_property.h"
 
@@ -83,6 +86,20 @@ private:
   QString class_id_;
   ros::Subscriber top_sub_;
   std::vector<rviz::Property*> modifiedChildren_;
+
+  /* bool sortNodes(strands_navigation_msgs::TopologicalNode a, strands_navigation_msgs::TopologicalNode b) { return a.name.compare(b.name) < 0; } */
+
+  struct NodeSorter {
+
+    bool operator() (strands_navigation_msgs::TopologicalNode a,
+                     strands_navigation_msgs::TopologicalNode b) {
+      std::string an = a.name;
+      std::string bn = b.name;
+      std::transform(an.begin(), an.end(), an.begin(), ::tolower);
+      std::transform(bn.begin(), bn.end(), bn.begin(), ::tolower);
+      return an.compare(bn) < 0;
+    }
+  } nodeSort;
 };
 
 } // end namespace topological_rviz_tools
