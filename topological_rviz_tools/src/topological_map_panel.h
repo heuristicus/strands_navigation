@@ -1,6 +1,8 @@
 #ifndef TOPMAP_PANEL_H
 #define TOPMAP_PANEL_H
 
+#include <cstdio>
+
 #include "rviz/panel.h"
 #include "topmap_manager.h"
 #include "tag_property.h"
@@ -16,6 +18,7 @@
 #include "strands_navigation_msgs/RmvNode.h"
 
 class QComboBox;
+class QMessageBox;
 class QModelIndex;
 class QPushButton;
 class QInputDialog;
@@ -24,7 +27,7 @@ namespace topological_rviz_tools {
 /**
  * @brief Panel for choosing the view controller and saving and restoring
  * viewpoints.
-RR */
+ */
 class TopologicalMapPanel: public rviz::Panel
 {
 Q_OBJECT

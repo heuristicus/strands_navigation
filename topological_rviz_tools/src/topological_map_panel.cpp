@@ -7,6 +7,8 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QInputDialog>
+#include <QMessageBox>
+#include <QComboBox>
 
 namespace topological_rviz_tools
 {
@@ -69,7 +71,27 @@ void TopologicalMapPanel::onDeleteClicked()
   QList<TagProperty*> tags_to_delete = properties_view_->getSelectedObjects<TagProperty>();
   QList<EdgeProperty*> edges_to_delete = properties_view_->getSelectedObjects<EdgeProperty>();
 
+  if (nodes_to_delete.size() + tags_to_delete.size() + edges_to_delete.size() == 0){
+    return;
+  }
+
   NodeController* controller = topmap_man_->getController();
+
+  QMessageBox box;
+  char* buf = new char[100];
+  sprintf(buf, "Delete %d nodes, %d edges and %d tags?", nodes_to_delete.size(), tags_to_delete.size(), edges_to_delete.size());
+  std::string info_msg = buf;
+  delete buf;
+  
+  box.setText("You requested removal of objects.");
+  box.setInformativeText(QString::fromStdString(info_msg));
+  box.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+  box.setDefaultButton(QMessageBox::Cancel);
+  int ret = box.exec();
+
+  if (ret == QMessageBox::Cancel){
+    return;
+  }
   
   for(int i = 0; i < nodes_to_delete.size(); i++) {
     strands_navigation_msgs::RmvNode srv;
