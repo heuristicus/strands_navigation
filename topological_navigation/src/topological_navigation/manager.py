@@ -50,8 +50,9 @@ class map_manager(object):
         self.remove_node_srv=rospy.Service('/topological_map_manager/remove_topological_node', strands_navigation_msgs.srv.RmvNode, self.remove_node_cb)
         #This service adds content to a node
         self.add_content_to_node_srv=rospy.Service('/topological_map_manager/add_content_to_node', strands_navigation_msgs.srv.AddContent, self.add_content_cb)
-        self.update_node_name_srv = rospy.Service("/topological_map_manager/update_node_name", strands_navigation_msgs.srv.UpdateNodeName, self.update_node_name)
-        self.update_node_waypoint_srv = rospy.Service("/topological_map_manager/update_node_pose", strands_navigation_msgs.srv.AddNode, self.update_node_waypoint)
+        self.update_node_name_srv = rospy.Service("/topological_map_manager/update_node_name", strands_navigation_msgs.srv.UpdateNodeName, self.update_node_name_cb)
+        self.update_node_waypoint_srv = rospy.Service("/topological_map_manager/update_node_pose", strands_navigation_msgs.srv.AddNode, self.update_node_waypoint_cb)
+        self.update_node_tolerance_srv = rospy.Service("/topological_map_manager/update_node_tolerance", strands_navigation_msgs.srv.UpdateNodeTolerance, self.update_node_tolerance_cb)
         #This service adds a tag to the meta information of a list of nodes
         self.get_tag_srv=rospy.Service('/topological_map_manager/get_tags', strands_navigation_msgs.srv.GetTags, self.get_tags_cb)
         #This service adds gets all tags from the meta information of a node
@@ -68,7 +69,7 @@ class map_manager(object):
         self.get_node_edges_srv=rospy.Service('/topological_map_manager/get_edges_between_nodes', strands_navigation_msgs.srv.GetEdgesBetweenNodes, self.get_edges_between_cb)
         #adds edge between two nodes
         self.add_edges_srv=rospy.Service('/topological_map_manager/add_edges_between_nodes', strands_navigation_msgs.srv.AddEdge, self.add_edge_cb)
-        self.update_edge_srv=rospy.Service('/topological_map_manager/update_edge', strands_navigation_msgs.srv.UpdateEdge, self.update_edge)
+        self.update_edge_srv=rospy.Service('/topological_map_manager/update_edge', strands_navigation_msgs.srv.UpdateEdge, self.update_edge_cb)
         self.remove_edge_srv=rospy.Service('/topological_map_manager/remove_edge', strands_navigation_msgs.srv.AddEdge, self.remove_edge_cb)
 
     def updateCallback(self, msg) :
@@ -428,9 +429,13 @@ class map_manager(object):
         msg_store.insert(node,meta)
         return True
 
-    def update_node_name(self, req):
-        node_name = req.node_name
-        new_name = req.new_name
+    def update_node_name_cb(self, req):
+        return self.update_node_name(req.node_name, req.new_name)
+
+    def update_node_name(self, node_name, new_name):
+        if req.new_name in self.names:
+            return False, "node with name {0} already exists".format(req.new_name)
+
         msg_store = MessageStoreProxy(collection='topological_maps')
         # The query retrieves the node name with the given name from the given pointset.
         query = {"name": node_name, "pointset": self.name}
@@ -478,16 +483,19 @@ class map_manager(object):
             rospy.logerr("Available data: "+str(available))
             return False, "multiple nodes with the name existed, or node not found"
 
-    def update_node_waypoint(self, req):
+    def update_node_waypoint_cb(self, req):
+        return self.update_node_waypoint(req.name, req.pose)
+
+    def update_node_waypoint(self, name, pose):
         msg_store = MessageStoreProxy(collection='topological_maps')
-        query = {"name": req.name, "pointset": self.name}
+        query = {"name": name, "pointset": self.name}
         query_meta = {}
         query_meta["pointset"] = self.name
         query_meta["map"] = self.nodes.map
         available = msg_store.query(TopologicalNode._type, query, query_meta)
         if len(available) == 1:
             positionZ=available[0][0].pose.position.z
-            available[0][0].pose = req.pose
+            available[0][0].pose = pose
             available[0][0].pose.position.z = positionZ
             msg_store.update(available[0][0], query_meta, query, upsert=True)
             return True
@@ -495,6 +503,28 @@ class map_manager(object):
             rospy.logerr("Impossible to store in DB "+str(len(available))+" waypoints found after query")
             rospy.logerr("Available data: "+str(available))
             return False
+
+    def update_node_tolerance_cb(self, req):
+        return self.update_node_tolerance(req.node_name, req.xy_tolerance, req.yaw_tolerance)
+
+    def update_node_tolerance(self, name, new_xy, new_yaw):
+        msg_store = MessageStoreProxy(collection='topological_maps')
+        query = {"name": name, "pointset": self.name}
+        query_meta = {}
+        query_meta["pointset"] = self.name
+        query_meta["map"] = self.nodes.map
+        available = msg_store.query(TopologicalNode._type, query, query_meta)
+        if len(available) == 1:
+            available[0][0].xy_goal_tolerance = new_xy
+            available[0][0].yaw_goal_tolerance = new_yaw
+
+            msg_store.update(available[0][0], query_meta, query, upsert=True)
+            return True, ""
+        else:
+            rospy.logerr("Impossible to store in DB "+str(len(available))+" waypoints found after query")
+            rospy.logerr("Available data: "+str(available))
+            return False, ""
+
 
     def remove_node_cb(self, req):
         res = self.remove_node(req.name)
@@ -566,10 +596,13 @@ class map_manager(object):
             rospy.logerr("Available data: "+str(available)) 
             return False
 
-    def update_edge(self, req):
+    def update_edge_cb(self, req):
+        return self.update_edge(req.edge_id, req.action, req.top_vel)
+
+    def update_edge(self, edge_id, action, top_vel):
         msg_store = MessageStoreProxy(collection='topological_maps')
         # The query retrieves the node name with the given name from the given pointset.
-        query = {"name": req.edge_id.split('_')[0], "pointset": self.name}
+        query = {"name": edge_id.split('_')[0], "pointset": self.name}
         # The meta-information is some additional information about the specific
         # map that we are interested in (?)
         query_meta = {}
@@ -580,9 +613,9 @@ class map_manager(object):
         available = msg_store.query(TopologicalNode._type, query, query_meta)
         if len(available) == 1:
             for edge in available[0][0].edges:
-                if edge.edge_id == req.edge_id:
-                    edge.action = req.action or edge.action
-                    edge.top_vel = req.top_vel or edge.top_vel
+                if edge.edge_id == edge_id:
+                    edge.action = action or edge.action
+                    edge.top_vel = top_vel or edge.top_vel
 
             msg_store.update(available[0][0], query_meta, query, upsert=True)
             return True, ""
