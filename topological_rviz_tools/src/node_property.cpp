@@ -85,8 +85,8 @@ void NodeProperty::updateYawTolerance(){
 
   strands_navigation_msgs::UpdateNodeTolerance srv;
   srv.request.node_name = name_;
-  srv.request.update_yaw = true;
   srv.request.yaw_tolerance = yaw_tolerance_->getFloat();
+  srv.request.xy_tolerance = xy_tolerance_->getFloat();
   
   if (toleranceUpdate_.call(srv)) {
     if (srv.response.success) {
@@ -113,7 +113,7 @@ void NodeProperty::updateXYTolerance(){
 
   strands_navigation_msgs::UpdateNodeTolerance srv;
   srv.request.node_name = name_;
-  srv.request.update_xy = true;
+  srv.request.yaw_tolerance = yaw_tolerance_->getFloat();
   srv.request.xy_tolerance = xy_tolerance_->getFloat();
   
   if (toleranceUpdate_.call(srv)) {

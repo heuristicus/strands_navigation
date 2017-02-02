@@ -39,6 +39,7 @@ void EdgeProperty::updateTopvel(){
   strands_navigation_msgs::UpdateEdge srv;
   srv.request.edge_id = edge_id_->getStdString().c_str();
   srv.request.top_vel = top_vel_->getFloat();
+  srv.request.action = action_->getStdString().c_str();
   
   if (edgeUpdate_.call(srv)) {
     if (srv.response.success) {
@@ -66,6 +67,7 @@ void EdgeProperty::updateAction(){
 
   strands_navigation_msgs::UpdateEdge srv;
   srv.request.edge_id = edge_id_->getStdString().c_str();
+  srv.request.top_vel = top_vel_->getFloat();
   srv.request.action = action_->getStdString().c_str();
   
   if (edgeUpdate_.call(srv)) {
