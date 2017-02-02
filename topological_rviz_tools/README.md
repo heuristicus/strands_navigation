@@ -18,6 +18,14 @@ something like the following:
 
 ![Annotated rviz_tools image](images/00_annotated.png)
 
+You can move nodes around by clicking the arrow at the centre of topological
+nodes and dragging. The ring around the node allows you to change the
+orientation of the node. You can delete edges using the red arrows in the middle
+of edges.
+
+The following sections give a little more detail about to tools and panel
+labelled in the image above.
+
 ### 1. The edge tool
 
 Use this tool to create edges between nodes. Left click to select the start point of
