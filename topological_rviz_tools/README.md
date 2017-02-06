@@ -6,12 +6,15 @@ Rviz tool for creating a STRANDS topological map
 This rviz toolset can be launched using
 
 ```sh
-roslaunch topological_rviz_tools strands_rviz_topmap.launch map:=/path/to/map.yaml topmap:=topmap_pointset db_path:=/path/to/db
+roslaunch topological_rviz_tools strands_rviz_topmap.launch map:=/path/to/map.yaml topmap:=topmap_pointset db_path:=/path/to/db standalone:=true
 ```
 
 `map` specifies the `yaml` file for the map you are using, and `topmap` the
 corresponding pointset that exists in the database. `db_path` is used to point
-to the database you want to use.
+to the database you want to use. If `standalone` is true, everything needed will
+be run automatically. If false, it is assumed that other parts of the strands
+system are running (navigation and mongodb_store in particular), and only run
+a few additional things.
 
 When you launch with a database which contains a topological map, you should see
 something like the following:
