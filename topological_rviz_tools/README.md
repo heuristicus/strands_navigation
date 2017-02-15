@@ -16,6 +16,10 @@ be run automatically. If false, it is assumed that other parts of the strands
 system are running (navigation and mongodb_store in particular), and only run
 a few additional things.
 
+You can also add the node tool, edge tool and topological map panel to rviz
+individually by using the buttons for adding tools or panels. You will need to
+run the above launch file with `standalone=false` for this to work correctly.
+
 When you launch with a database which contains a topological map, you should see
 something like the following:
 
