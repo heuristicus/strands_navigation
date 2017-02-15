@@ -19,7 +19,7 @@ generate_messages(
 )
 
 catkin_package()
-include_directories(${catkin_INCLUDE_DIRS})
+include_directories(${catkin_INCLUDE_DIRS} src)
 link_directories(${catkin_LIBRARY_DIRS})
 
 ## This setting causes Qt's "MOC" generation to happen automatically.
