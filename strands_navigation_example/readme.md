@@ -59,7 +59,7 @@ To prepare, we need to first insert an empty map into the database. Start the da
 roslaunch mongodb_store mongodb_store.launch db_path:=/home/$USER/strands_test_db
 ```
 
-Then, insert an empty map
+Then, insert an empty map. Note that this script is missing from some of the release packages. If so, clone the repository at https://github.com/LCAS/topological_navigation, add it to a workspace and build, and it should be available.
 
 ```
 rosrun topological_utils insert_empty_map.py jackal_race
