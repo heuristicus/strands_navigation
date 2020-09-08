@@ -65,7 +65,7 @@ Then, insert an empty map. Note that this script is missing from some of the rel
 rosrun topological_utils insert_empty_map.py jackal_race
 ```
 
-Once that is done, we can start the topological rviz tools.
+Once that is done, we can start the topological rviz tools. Note that this will also run a mongodb_store so the one you started earlier will shut down.
 
 ```
 roslaunch topological_rviz_tools strands_rviz_topmap.launch db_path:=/home/$USER/strands_test_db map:=`rospack find jackal_navigation`/maps/jackal_race.yaml topmap:=jackal_race standalone:=true
@@ -100,7 +100,7 @@ roslaunch mongodb_store mongodb_store.launch db_path:=/home/$USER/strands_test_d
 and run the topological navigation launch
 
 ```
-roslaunch topological_navigation minimal_topological_navigation.launch map:=jackal_race
+roslaunch topological_navigation minimal_topological_navigation.launch map:=jackal_race move_base_planner:=move_base/TrajectoryPlannerROS
 ```
 
 Start rviz and load the `topological.rviz` config found in this package.
